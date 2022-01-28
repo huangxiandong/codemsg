@@ -10,3 +10,4 @@ CodeMsg是一个类似于IPMsg的Visual Studio Code的扩展程序
 ## Todo
 
 ## ScreenShots
+<img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/images/1.png?>
