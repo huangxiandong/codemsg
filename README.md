@@ -7,6 +7,9 @@ CodeMsg is a similar to IPMsg for Visual Studio Code
 * UTF-8 extension
 * Chat history log
 * Message Send/Receive encrypted extension(only support RSA-1024 and AES-256)
+
 ## Todo
 
 ## ScreenShots
+<img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/images/1.png?>
+<img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/images/2.png?>
