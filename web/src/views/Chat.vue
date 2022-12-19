@@ -1,5 +1,5 @@
 <template>
-  <div class="chat">
+  <div class="chat" ref="chat">
     <div class="chat-top">
       <div class="chat-name">
         <span>{{ chatName }}</span>
@@ -79,14 +79,35 @@
       >
       </emoji-panel>
     </div>
+    <n-modal
+      v-model:show="showDrop"
+      :show-icon="false"
+      :mask-closable="false"
+      preset="dialog"
+      :title="modalTitle"
+      :positive-text="nls.chatOKTitle"
+      :negative-text="nls.chatCancelTitle"
+      @positive-click="onPositiveClick"
+      @negative-click="onNegativeClick">
+      <div class="drop-attachment" v-for="file in dropFiles">
+        <n-icon
+            size="24"
+            class="drop-attachment-icon"
+          >
+            <attach20-filled />
+        </n-icon>
+        <div>{{file}}</div>
+      </div>
+    </n-modal>
   </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { NInput, NIcon, NTooltip, NButton, NScrollbar } from "naive-ui";
+import { NInput, NIcon, NTooltip, NButton, NScrollbar, NModal } from "naive-ui";
 import { File, Folder } from "@vicons/tabler";
 import { Emoji16Regular } from "@vicons/fluent";
+import { Attach20Filled } from "@vicons/fluent";
 import ChatItem from "@/components/ChatItem.vue";
 import ipc from "@/ipc";
 import { formatDate, generateId } from "@/utils/util";
@@ -101,9 +122,11 @@ export default defineComponent({
     NTooltip,
     NButton,
     NScrollbar,
+    NModal,
     File,
     Folder,
     Emoji16Regular,
+    Attach20Filled,
     ChatItem,
     EmojiPanel,
   },
@@ -111,7 +134,9 @@ export default defineComponent({
     return {
       inputMsg: "",
       showEmojiPanel: false,
-      editor: undefined
+      editor: undefined,
+      showDrop: false,
+      dropFiles: []
     };
   },
   computed: {
@@ -129,6 +154,9 @@ export default defineComponent({
         return this.$store.state.chatWith.feiq;
       }
       return false;
+    },
+    modalTitle() {
+      return `发送给：${this.$store.state.chatWith.nickname}`
     },
     messages() {
       if (this.$store.state.chatWith === undefined) {
@@ -329,6 +357,54 @@ export default defineComponent({
         }
       }
       return text;
+    },
+    onNegativeClick () {
+      this.showDrop = false
+    },
+    onPositiveClick () {
+      this.showDrop = false
+      if (this.$store.state.chatWith !== undefined) {
+        let packetId = generateId();
+        let messageId = packetId + "";
+        let remote = {
+          feiq: this.$store.state.chatWith.feiq,
+          address: this.$store.state.chatWith.address,
+          port: this.$store.state.chatWith.port,
+        };
+        let packet = {
+          packetId: packetId,
+          version: "1",
+        };
+        let extra = {
+          paths: this.dropFiles
+        }
+        ipc.postMainMessage({
+          messageId,
+          info: {
+            type: "dropFile",
+          },
+          remote,
+          packet,
+          extra
+        });
+      }
+    },
+    handleDrop(e) {
+      if(this.$store.state.chatWith === undefined) {
+        return;
+      }
+      e.preventDefault()
+      console.log("data transfer", e.dataTransfer);
+      const fileList = e.dataTransfer.files
+      // let file = fileList[0]
+      this.dropFiles.splice(0, this.dropFiles.length);
+      for(let file of fileList) {
+        console.log(file);
+        this.dropFiles.push(
+          file.path
+        )
+      }
+      this.showDrop = true;
     }
   },
   mounted() {
@@ -347,6 +423,25 @@ export default defineComponent({
         top: Number.MAX_SAFE_INTEGER,
       });
     });
+
+    const chat = this.$refs.chat
+    // 被拖动的对象进入目标容器
+    chat.addEventListener('dragover', e => {
+      e.preventDefault()
+      if(this.$store.state.chatWith === undefined) {
+        return;
+      }
+      // chat.style.cursor = 'no-drop';
+    })
+    // 被拖动的对象离开目标容器
+    chat.addEventListener('dragleave', e => {
+      e.preventDefault()
+      if(this.$store.state.chatWith === undefined) {
+        return;
+      }
+    })
+    // 被拖动的对象进入目标容器，释放鼠标键
+    chat.addEventListener('drop', this.handleDrop);
   },
   watch: {
     "$store.state.count"(newVal) {
@@ -502,6 +597,15 @@ export default defineComponent({
 .emoji-item {
   zoom: 0.4;
   vertical-align: middle;
+}
+
+.drop-attachment {
+  display: flex;
+  align-items: center;
+}
+
+.drop-attachment-icon {
+  color: green;
 }
 
 @import "../styles/emoji.less";

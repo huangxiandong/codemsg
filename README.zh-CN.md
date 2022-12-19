@@ -21,6 +21,10 @@ CodeMsg是一个与IPMsg兼容的Visual Studio Code的扩展程序
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/2.png?>
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/3.png?>
 
+## 新功能
+* ### 版本 0.4.1
+  * 发送文件和文件夹支持拖拽
+
 ## License
 
 Copyright (c) Microsoft Corporation and huangxiandong. All rights reserved.

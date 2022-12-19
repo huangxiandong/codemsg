@@ -60,6 +60,8 @@ export default {
   chatFileOpenFile: "Open File",
   chatFileOpenFolder: "Reveal File in Folder",
   chatEditorPlaceholder: "Please Input Text",
+  chatOKTitle: "OK",
+  chatCancelTitle: "Cancel",
 
   chatFileName: "File Name",
   chatFileSize: "File Size",

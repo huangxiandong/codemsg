@@ -98,6 +98,55 @@ function handleSendFile(remote: any, packet: any, webview: vscode.Webview, folde
     }
   });
 }
+
+function handleDropFile(remote: any, packet: any, extra: any, webview: vscode.Webview) {
+  let paths = extra.paths;
+  console.log('Selected file: ' + paths);
+  let files = [];
+  let fileId = 1;
+  for(let path of paths) {
+    let filepath = path;
+    let fi = fs.statSync(filepath);
+    let isFolder = fi.isDirectory();
+    let tempPath = filepath.replace(/\\/g, "/");
+    let index = tempPath.lastIndexOf("/");
+    let fileName = filepath;
+    if(index  != -1) {
+      fileName = filepath.substring(index+1);
+    }
+    files.push({
+      fileId: fileId,
+      name: fileName,
+      path: filepath,
+      size: fi.size,
+      type: isFolder?1:0,
+      accept: false
+    });
+    fileId++;
+  }
+  let extra1 = {
+    files
+  }
+
+  IPMsg.instance().sendFile(remote, packet, extra1);	
+  let message = new WebviewMessage("myfile", 
+  {
+    address: remote.address,
+    port: remote.port
+  },{
+    packetId: packet.packetId
+  },{
+    files: files,
+    status: 1, //1.ready, 2.processing, 3.finish, 4.reject
+    progress: 0,
+  });
+
+  webview.postMessage({
+    type: 'fromMain',
+    message: message.toString()
+  });
+}
+
 function handleWebviewMessage(obj: any, webview: vscode.Webview) {
   switch(obj.info.type) {
     case "sendMsg": {
@@ -120,6 +169,9 @@ function handleWebviewMessage(obj: any, webview: vscode.Webview) {
       handleSendFile(obj.remote, obj.packet, webview, true);
     }
     break;
+    case "dropFile": {
+      handleDropFile(obj.remote, obj.packet, obj.extra, webview);
+    }
   }
 }
 

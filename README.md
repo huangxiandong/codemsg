@@ -22,6 +22,10 @@ If you are concerned about the above precautions, please use it with caution.
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/2.png?>
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/3.png?>
 
+## What's new ?
+* ### Version 0.4.1
+  * Drag & Drop support for sending files and folders.
+
 ## License
 
 Copyright (c) Microsoft Corporation and huangxiandong. All rights reserved.

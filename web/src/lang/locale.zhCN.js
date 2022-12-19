@@ -60,6 +60,8 @@ export default {
   chatFileOpenFile: "打 开",
   chatFileOpenFolder: "打开所在文件夹",
   chatEditorPlaceholder: "输入文本",
+  chatOKTitle: "确认",
+  chatCancelTitle: "取消",
 
   chatFileName: "文件名",
   chatFileSize: "文件大小",
