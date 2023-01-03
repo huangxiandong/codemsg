@@ -33,7 +33,34 @@ export class MymsgView {
 			column || vscode.ViewColumn.One,
       {
         enableScripts: true,
-        retainContextWhenHidden: true
+        retainContextWhenHidden: true,
+				localResourceRoots: [
+					vscode.Uri.file(path.join(context.extensionPath, "web", "dist")),
+					vscode.Uri.file("c:/"),
+					vscode.Uri.file("d:/"),
+					vscode.Uri.file("e:/"),
+					vscode.Uri.file("f:/"),
+					vscode.Uri.file("g:/"),
+					vscode.Uri.file("h:/"),
+					vscode.Uri.file("i:/"),
+					vscode.Uri.file("j:/"),
+					vscode.Uri.file("k:/"),
+					vscode.Uri.file("l:/"),
+					vscode.Uri.file("m:/"),
+					vscode.Uri.file("n:/"),
+					vscode.Uri.file("o:/"),
+					vscode.Uri.file("p:/"),
+					vscode.Uri.file("q:/"),
+					vscode.Uri.file("r:/"),
+					vscode.Uri.file("s:/"),
+					vscode.Uri.file("t:/"),
+					vscode.Uri.file("u:/"),
+					vscode.Uri.file("v:/"),
+					vscode.Uri.file("w:/"),
+					vscode.Uri.file("x:/"),
+					vscode.Uri.file("y:/"),
+					vscode.Uri.file("z:/")
+				]
       }
 		);
 

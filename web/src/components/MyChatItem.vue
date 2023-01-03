@@ -5,6 +5,8 @@
     </div>
     <div v-if="message.info.type==='file'" class="my-chat-item-file">
       <chat-file-item :message="message"></chat-file-item>
+      <!-- <chat-image-item :message="message" /> -->
+      <!-- <chat-audio-item :message="message" /> -->
     </div>
     <div class="my-chat-item-bubble"></div>
     <div>
@@ -17,6 +19,8 @@
 import { NAvatar } from 'naive-ui';
 import ChatTextItem from "@/components/ChatTextItem.vue"
 import ChatFileItem from "@/components/ChatFileItem.vue"
+import ChatImageItem from "@/components/ChatImageItem.vue"
+import ChatAudioItem from "@/components/ChatAudioItem.vue"
 
 export default {
   name: "MyChatItem",
@@ -29,7 +33,9 @@ export default {
   components: {
     NAvatar,
     ChatTextItem,
-    ChatFileItem
+    ChatFileItem,
+    ChatImageItem,
+    ChatAudioItem
   },
   computed: {
     initial() {

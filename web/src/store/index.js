@@ -200,7 +200,7 @@ export default createStore({
         });
         let feiq = false;
         let packet = message.packet;
-        if(packet.version.indexOf("#") != -1) {
+        if(packet.version !== undefined && packet.version.indexOf("#") != -1) {
           feiq = true;
         }
         let online = false;

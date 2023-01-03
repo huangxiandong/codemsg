@@ -1,39 +1,50 @@
 <template>
   <div class="my-chat-file">
-    <div class="my-chat-file-container">
-      <div class="my-chat-file-container-file">
-        <div class="my-chat-file-container-name" @click="handleFilesInfo">
-         <a>{{fileName}}</a>
+    <template v-if="isImage">
+      <chat-image-item :message="message" />
+    </template>
+    <template v-else-if="isAudio">
+      <chat-audio-item :message="message" />
+    </template>
+    <template v-else-if="isVideo">
+      <chat-video-item :message="message" />
+    </template>
+    <template v-else>
+      <div class="my-chat-file-container">
+        <div class="my-chat-file-container-file">
+          <div class="my-chat-file-container-name" @click="handleFilesInfo">
+          <a>{{fileName}}</a>
+          </div>
+          <div class="my-chat-file-container-size">{{fileSize}}</div>
         </div>
-        <div class="my-chat-file-container-size">{{fileSize}}</div>
+        <div class="my-chat-file-container-icon">
+          <n-icon size="50">
+            <File/>
+          </n-icon>
+        </div>
       </div>
-      <div class="my-chat-file-container-icon">
-        <n-icon size="50">
-          <File/>
-        </n-icon>
-      </div>
-    </div>
-    <div class="my-chat-file-status">
-      <div class="my-chat-file-status-text">{{statusText}}</div>
-      <n-progress v-if="displayProgress"
-      class="my-chat-file-status-progress"
-        type="line"
-        :height="10"
-        :percentage="filePercentage"
-        indicator-placement
-        processing
-      />
-    </div>
-    <n-modal v-model:show="showFilesAccept">
-      <div>
-        <n-data-table
-          ref="table"
-          :columns="acceptColumns"
-          :data="acceptData"
-          :row-key="(rowData)=>{return rowData.fileId}"
+      <div class="my-chat-file-status">
+        <div class="my-chat-file-status-text">{{statusText}}</div>
+        <n-progress v-if="displayProgress"
+        class="my-chat-file-status-progress"
+          type="line"
+          :height="10"
+          :percentage="filePercentage"
+          indicator-placement
+          processing
         />
       </div>
-    </n-modal>
+      <n-modal v-model:show="showFilesAccept">
+        <div>
+          <n-data-table
+            ref="table"
+            :columns="acceptColumns"
+            :data="acceptData"
+            :row-key="(rowData)=>{return rowData.fileId}"
+          />
+        </div>
+      </n-modal>
+    </template>
   </div>
 </template>
 
@@ -41,6 +52,9 @@
 import { NIcon, NProgress, NModal, NDataTable } from 'naive-ui'
 import { File } from '@vicons/tabler';
 import { formatString } from "@/utils/util";
+import ChatImageItem from "@/components/ChatImageItem.vue"
+import ChatAudioItem from "@/components/ChatAudioItem.vue"
+import ChatVideoItem from "@/components/ChatVideoItem.vue"
 
 export default {
   name: "MyChatFile",
@@ -49,7 +63,10 @@ export default {
     NModal,
     NProgress,
     NIcon,
-    File
+    File,
+    ChatImageItem,
+    ChatAudioItem,
+    ChatVideoItem
   },
   props: {
     message: {
@@ -147,6 +164,42 @@ export default {
       }
       return data;
     },
+    isImage() {
+      let files = this.message.extra.files;
+      let name = files[0].name;
+      let index = name.lastIndexOf(".");
+      if(index != -1) {
+        let surfix = name.substring(index+1);
+        if(surfix === "png" || surfix === "jpg" || surfix === "gif") {
+          return true;
+        }
+      }
+      return false;
+    },
+    isAudio() {
+      let files = this.message.extra.files;
+      let name = files[0].name;
+      let index = name.lastIndexOf(".");
+      if(index != -1) {
+        let surfix = name.substring(index+1);
+        if(surfix === "mp3" || surfix === "ogg") {
+          return true;
+        }
+      }
+      return false;
+    },
+    isVideo() {
+      let files = this.message.extra.files;
+      let name = files[0].name;
+      let index = name.lastIndexOf(".");
+      if(index != -1) {
+        let surfix = name.substring(index+1);
+        if(surfix === "mp4" || surfix === "ogv") {
+          return true;
+        }
+      }
+      return false;
+    }
   },
   methods: {
     formatSize(size) {

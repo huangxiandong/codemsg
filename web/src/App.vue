@@ -93,5 +93,6 @@ export default defineComponent({
   width: 100%;
   height: 99vh;
   display: flex;
+  user-select: none;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="chat-text-item">
-    <div :style="{ fontSize: textFontSize + 'px'}" v-html="html"></div>
+    <div class="chat-text-item-text" :style="{ fontSize: textFontSize + 'px'}" v-html="html"></div>
     <div class="chat-text-item-date">{{message.info.date}}</div>
   </div>
 </template>
@@ -22,7 +22,7 @@ export default {
       const uriRoot = this.$store.state.uriRoot;
       let text = this.message.extra.text;
       // console.log("chat text", text);
-      let myHtml = '<p style="margin:2px">';
+      let myHtml = "";
       if(text !== undefined) {
         do {
           let start = text.indexOf(":");
@@ -49,7 +49,27 @@ export default {
           }
         } while(text.length > 0)
       }
-      myHtml = `${myHtml}</p>`
+      let text_http = "";
+      let pos = 0;
+      if(myHtml !== undefined) {
+        do {
+          let start = myHtml.indexOf("http://");
+          if(start == -1) {
+            text_http = myHtml;
+            pos = myHtml.length;
+          } else {
+            let end = myHtml.indexOf(" ", start+1);
+            if(end == -1) {
+              end = myHtml.length;
+            }
+            pos = end;
+            let url = myHtml.substring(start, end);
+            text_http = `${text_http}<a href="${url}">${url}</a>`
+          }
+        } while(pos < text.length)
+      }
+      myHtml = text_http;
+      myHtml = `<p style="margin:2px">${myHtml}</p>`
       // console.log("myHtml", myHtml);
       return myHtml;
     }
@@ -66,8 +86,7 @@ export default {
 }
 
 .chat-text-item-text {
-  font-size: 16px;
-  max-width: 200px;
+  user-select: text;
 }
 
 .chat-text-item-date {

@@ -89,6 +89,7 @@ function handleSendFile(remote: any, packet: any, webview: vscode.Webview, folde
         files: files,
         status: 1, //1.ready, 2.processing, 3.finish, 4.reject
         progress: 0,
+        location: fileUri[0].fsPath
       });
 
       webview.postMessage({
