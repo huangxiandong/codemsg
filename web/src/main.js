@@ -366,6 +366,8 @@ window.addEventListener('message', event => {
     case "setUriRoot": {
       const uriRoot = data.uriRoot;
       store.dispatch("setUriRoot", uriRoot);
+      const webRoot = data.webRoot;
+      store.dispatch("setWebRoot", webRoot);
     }
     break;
   }

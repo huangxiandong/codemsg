@@ -189,7 +189,7 @@ export class IPMsg {
     });
 
     if(cmd == IPMdef.IPMSG_GETDIRFILES) {
-      this.transmitDir(packet, {address, port:2425, packetId}, socket);
+      this.transmitDir(packet, {address, port:2425, packetId, fileId}, socket);
       
     } else if(cmd == IPMdef.IPMSG_GETFILEDATA) {
       this.transmitFile(packet, address, socket);
@@ -548,7 +548,9 @@ export class IPMsg {
             size: fi.size,
             mtime: fi.mtime,
             attr: fi.attr,
-            accept: true
+            accept: true,
+            status: 1,
+            progress: 0,
           })
         }
       }
@@ -639,6 +641,7 @@ export class IPMsg {
         },{
           packetId: packetId,
         },{
+          fileId: fileId,
           fields: [{
             name: "progress",
             value: percentage
@@ -741,7 +744,7 @@ export class IPMsg {
     });
   }
   
-  private transmitDir(packet: IPMPack, option: {address: string, port: number, packetId: number}, socket : net.Socket) {
+  private transmitDir(packet: IPMPack, option: {address: string, port: number, packetId: number, fileId: number}, socket : net.Socket) {
     console.log("IPMdef.IPMSG_GETDIRFILES", packet.extra);
     let ss = packet.extra.split(":");
     let hexId = this.trim(ss[0]);
@@ -777,7 +780,7 @@ export class IPMsg {
     }
   }
 
-  private transmitDirSingle(packet: IPMPack, option: {address: string, port: number, packetId: number}, socket : net.Socket, dir: string) {
+  private transmitDirSingle(packet: IPMPack, option: {address: string, port: number, packetId: number, fileId: number}, socket : net.Socket, dir: string) {
     let me = this;
     let address = option.address;
     this.transmitDirEnter(packet, option, socket, dir);
@@ -795,7 +798,7 @@ export class IPMsg {
     this.transmitDirLeave(packet, option, socket, dir);
   }
 
-  private transmitDirEnter(packet: IPMPack, option: {address: string, port: number, packetId: number}, socket : net.Socket, dir: string) {
+  private transmitDirEnter(packet: IPMPack, option: {address: string, port: number, packetId: number, fileId: number}, socket : net.Socket, dir: string) {
     console.error("transmitDirEnter", dir);
     let feiq = false;
     if(packet.version.indexOf("#") != -1) {
@@ -831,7 +834,7 @@ export class IPMsg {
     socket.write(allBuff);
   }
 
-  private transmitDirFile(packet: IPMPack, option: {address: string, port: number, packetId: number}, socket : net.Socket, dir: string) {
+  private transmitDirFile(packet: IPMPack, option: {address: string, port: number, packetId: number, fileId: number}, socket : net.Socket, dir: string) {
     console.log("transmitDirFile", dir);
     let feiq = false;
     if(packet.version.indexOf("#") != -1) {
@@ -894,7 +897,7 @@ export class IPMsg {
     });
   }
 
-  private transmitDirLeave(packet: IPMPack, option: {address: string, port: number, packetId: number}, socket : net.Socket,  dir: string) {
+  private transmitDirLeave(packet: IPMPack, option: {address: string, port: number, packetId: number, fileId: number}, socket : net.Socket,  dir: string) {
     console.error("transmitDirLeave", dir);
     let strLeave = `:.:0:${IPMdef.IPMSG_FILE_RETPARENT}:`;
     let length = strLeave.length;    
@@ -1677,6 +1680,7 @@ export class IPMsg {
     },{
       packetId: packetId,
     },{
+      fileId: remote.fileId,
       fields: [{
         name: "progress",
         value: percentage

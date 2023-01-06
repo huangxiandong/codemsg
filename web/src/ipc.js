@@ -39,8 +39,7 @@ export default {
       console.log("openFile", message);
       window.vscode.postMessage({
         type: 'openFile',
-        filename: message.filename,
-        location: message.location
+        filepath: message.filepath
       });
     }
   },
@@ -49,8 +48,7 @@ export default {
       console.log("openFolder", message);
       window.vscode.postMessage({
         type: 'openFolder',
-        filename: message.filename,
-        location: message.location
+        filepath: message.filepath
       });
     }
   },

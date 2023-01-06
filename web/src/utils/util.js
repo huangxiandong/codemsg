@@ -32,8 +32,44 @@ let formatString = function() {
   return a
 }
 
+let isImage = function(name) {
+  let index = name.lastIndexOf(".");
+  if(index != -1) {
+    let surfix = name.substring(index+1);
+    if(surfix === "png" || surfix === "jpg" || surfix === "gif") {
+      return true;
+    }
+  }
+  return false;
+}
+
+let isAudio = function(name) {
+  let index = name.lastIndexOf(".");
+  if(index != -1) {
+    let surfix = name.substring(index+1);
+    if(surfix === "mp3" || surfix === "ogg") {
+      return true;
+    }
+  }
+  return false;
+}
+
+let isVideo = function(name) {
+  let index = name.lastIndexOf(".");
+  if(index != -1) {
+    let surfix = name.substring(index+1);
+    if(surfix === "mp4" || surfix === "ogv") {
+      return true;
+    }
+  }
+  return false;
+}
+
 export {
   formatDate,
   generateId,
-  formatString
+  formatString,
+  isImage,
+  isAudio,
+  isVideo
 }

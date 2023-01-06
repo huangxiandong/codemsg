@@ -30,7 +30,8 @@ export default createStore({
     chatInputHeight: 200,
     uriRoot: '',
     ip: '',
-    ipList: []
+    ipList: [],
+    webRoot: '',
   },
 
   mutations: {
@@ -313,12 +314,30 @@ export default createStore({
             for(let field of message.extra.fields) {
               item.extra[field.name] = field.value;
             }
-            if(item.extra.status == 3 && message.extra.fileId !== undefined) {
+            if(message.extra.fileId !== undefined) {
               let fileId = message.extra.fileId;
               for(let file of item.extra.files) {
                 if(file.fileId === fileId) {
-                  file.accept = true;
+                  if(item.extra.status == 2) {
+                    file.status = 2;
+                    for(let field of message.extra.fields) {
+                      if(field.name === "progress") file.progress = field.value;
+                      if(field.name === "location") file.path = field.value + "/" + file.name;
+                    }
+                  }
+                  if(item.extra.status == 3) {
+                    file.accept = true;
+                    file.status = 3;
+                  }
                   break;
+                }
+              }
+            } else {
+              if(item.extra.status == 4) {
+                for(let file of item.extra.files) {
+                  if(file.status == 1) {
+                    file.status = 4;
+                  }
                 }
               }
             }
@@ -378,6 +397,9 @@ export default createStore({
     },
     setUriRoot: (state, uriRoot) => {
       state.uriRoot = uriRoot;
+    },
+    setWebRoot: (state, webRoot) => {
+      state.webRoot = webRoot;
     },
     setIp: (state, ip) => {
       state.ip = ip;
@@ -487,6 +509,9 @@ export default createStore({
     },
     setUriRoot: ({commit}, uriRoot) => {
       commit("setUriRoot", uriRoot);
+    },
+    setWebRoot: ({commit}, webRoot) => {
+      commit("setWebRoot", webRoot);
     },
     setIp: ({commit}, ip) => {
       commit("setIp", ip);

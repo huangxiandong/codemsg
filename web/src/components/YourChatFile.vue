@@ -1,307 +1,133 @@
 <template>
-  <div class="your-chat-file">
-    <div v-if="hasText" :style="{ fontSize: textFontSize + 'px'}">{{text}}</div>
-    <div class="your-chat-file-container">
-      <div class="your-chat-file-container-file">
-        <n-dialog-provider>
-          <div
-            class="your-chat-file-container-name"
-            @click="handleFilesInfo"
-          >
-            <a>{{ fileName }}</a>
+  <div @contextmenu="handleContextMenu">
+    <chat-image-item v-if="isImage" :file="file" />
+    <chat-audio-item v-else-if="isAudio" :file="file" />
+    <chat-video-item v-else-if="isVideo" :file="file"  />
+    <template v-else>
+      <div class="your-chat-file">
+        <div class="your-chat-file-bubble"></div>
+        <div class="your-chat-mask">
+          <div class="your-chat-file-content">
+            <chat-file-item :file="file" />
+          </div>        
+          <n-progress v-if="file.status==2" type="line" :percentage="file.progress" :height="2" :show-indicator="false"/>
+          <div v-if="showMask" class="your-chat-file-mask">
+            <div
+              class="your-chat-file-status-accept"
+              @click="handleAccept"
+            >
+              <Strong>{{nls.chatFileAccept}}</Strong>
+            </div>
+            <div
+              class="your-chat-file-status-reject"
+              @click="handleReject"
+            >
+              <strong>{{nls.chatFileReject}}</strong>
+            </div>
           </div>
-        </n-dialog-provider>
-        <div class="your-chat-file-container-size">{{ fileSize }}</div>
+        </div>
       </div>
-      <div class="your-chat-file-container-icon">
-        <n-icon size="50" class="your-chat-file-icon">
-          <File />
-        </n-icon>
-      </div>
-    </div>
-
-    <div class="your-chat-file-status">
-      <div
-        v-if="message.extra.status == 1"
-        class="your-chat-file-status-accept"
-        @click="handleAccept"
-      >
-        {{nls.chatFileAccept}}
-      </div>
-      <div
-        v-if="message.extra.status == 1"
-        class="your-chat-file-status-reject"
-        @click="handleReject"
-      >
-        {{nls.chatFileReject}}
-      </div>
-      <div v-if="displayStatus" class="your-chat-file-status-text">
-        {{ statusText }}
-      </div>
-      <div
-        v-if="message.extra.status == 3"
-        class="your-chat-file-status-accept"
-        @click="handleOpen"
-      >
-        {{nls.chatFileOpenFile}}
-      </div>
-      <div
-        v-if="message.extra.status == 3"
-        class="your-chat-file-status-reject"
-        @click="handleOpenFolder"
-      >
-        {{nls.chatFileOpenFolder}}
-      </div>
-      <n-progress
-        v-if="displayProgress"
-        class="your-chat-file-status-progress"
-        type="line"
-        :height="10"
-        :percentage="filePercentage"
-        indicator-placement
-        processing
-      />
-    </div>
-    <n-modal v-model:show="showSelectFiles">
-      <div>
-        <n-data-table
-          ref="table1"
-          :columns="selectColumns"
-          :data="tabelData"
-          v-model:checked-row-keys="checkedRowKeys"
-        />
-      </div>
-    </n-modal>
-    <n-modal v-model:show="showFilesAccept">
-      <div>
-        <n-data-table
-          ref="table2"
-          :columns="acceptColumns"
-          :data="acceptData"
-          :row-key="(rowData)=>{return rowData.fileId}"
-        />
-      </div>
-    </n-modal>
+    </template>
   </div>
+  <n-dropdown
+    placement="bottom-start"
+    trigger="manual"
+    :x="x"
+    :y="y"
+    :options="options()"
+    :show="showDropdown"
+    :on-clickoutside="onClickoutside"
+    @select="handleSelect"
+  />
 </template>
 
 <script>
-import { NIcon, NProgress, NModal, NDataTable } from "naive-ui";
-import { File } from "@vicons/tabler";
+import { NProgress, NDropdown } from 'naive-ui'
+import ChatImageItem from "@/components/ChatImageItem.vue"
+import ChatAudioItem from "@/components/ChatAudioItem.vue"
+import ChatVideoItem from "@/components/ChatVideoItem.vue"
+import ChatFileItem from "@/components/ChatFileItem.vue"
 import ipc from "@/ipc";
-import { formatString } from "@/utils/util";
+import { isImage, isAudio, isVideo } from "@/utils/util";
 
-const data = Array.apply(null, { length: 3 }).map((_, index) => ({
-  name: `Edward King ${index}`,
-  age: 32,
-  address: `London, Park Lane no. ${index}`,
-  key: index,
-}));
 export default {
   name: "YourChatFile",
   components: {
-    NDataTable,
-    NModal,
     NProgress,
-    NIcon,
-    File,
+    NDropdown,
+    ChatImageItem,
+    ChatAudioItem,
+    ChatVideoItem,
+    ChatFileItem
   },
   props: {
-    message: {
+    file: {
       type: Object,
       required: true,
     },
+    message: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
-      showSelectFiles: false,
-      showFilesAccept: false,
-      selectColumns: [
-        {
-          type: "selection"
-        },
-        {
-          title: this.$store.state.nls.chatFileName,
-          key: "name",
-        },
-        {
-          title: this.$store.state.nls.chatFileSize,
-          key: "size",
-        }
-      ],
-      acceptColumns: [
-        {
-          title: this.$store.state.nls.chatFileName,
-          key: "name",
-        },
-        {
-          title: this.$store.state.nls.chatFileSize,
-          key: "size",
-        },
-        {
-          title: this.$store.state.nls.chatFileStatus,
-          key: "accept"
-        }
-      ],
-    };
+      showDropdown: false,
+      x: 0,
+      y: 0
+    }
   },
   computed: {
     nls() {
       return this.$store.state.nls;
     },
-    hasText() {
-      return this.message.extra.text !== undefined && this.message.extra.text !== "";
-    },
-    text() {
-      return this.message.extra.text;
-    },
-    textFontSize() {
-      return this.$store.state.textFontSize;
-    },
-    fileName() {
-      let files = this.message.extra.files;
-      let str = files[0].name;
-      if(files.length > 1) {
-        str = str + formatString(this.nls.chatFileMulti, files.length);
-      }
-      return str;
-    },
-    fileSize() {
-      let files = this.message.extra.files;
-      let size = 0;
-      for (let file of files) {
-        let fileSize = file.size;
-        size += fileSize;
-      }
-      let str = this.formatSize(size);
-      return str;
-    },
-    filePercentage() {
-      return this.message.extra.progress;
-    },
-    statusText() {
-      let text = "";
-      switch (this.message.extra.status) {
-        case 2:
-          text = this.nls.chatYourfileStatus2;
-          break;
-        case 3:
-          text = this.nls.chatYourfileStatus31;
-          for(let file of this.message.extra.files) {
-            if(!file.accept) {
-              text = this.nls.chatYourfileStatus32;
-              break;
-            }
-          }
-          break;
-        case 4:
-          text = this.nls.chatYourfileStatus4;
-          break;
-      }
-      return text;
-    },
-    displayProgress() {
-      if (this.message.extra.status == 2) {
-        return true;
-      }
+    showMask() {
+      if(this.file.status !== undefined && this.file.status === 1) return true;
       return false;
     },
-    displayStatus() {
-      if (this.message.extra.status == 1 || this.message.extra.status == 3) {
+    isImage() {
+      let path = this.file.path;
+      let status = this.file.status;
+      if(path === undefined || status != 3) {
         return false;
       }
-      return true;
+      let name = this.file.name;
+      // console.log("++++++++++++++++++++", this.file);
+      return isImage(name);
     },
-    acceptData() {
-      let files = this.message.extra.files;
-      let data = []; 
-      for(let file of files) {
-        let fileSize = file.size;
-        let str = this.formatSize(fileSize);
-        data.push({
-          key: file.fileId,
-          fileId: file.fileId,
-          name: file.name,
-          size: str,
-          accept: file.accept?this.nls.chatYourfileReceiveText:this.nls.chatYourfileNotReceiveText
-        })
+    isAudio() {
+      let path = this.file.path;
+      let status = this.file.status;
+      if(path === undefined || status != 3) {
+        return false;
       }
-      return data;
+      let name = this.file.name;
+      return isAudio(name);      
     },
-    tabelData() {
-      let files = this.message.extra.files;
-      let data = []; 
-      for(let file of files) {
-        let fileSize =file.size;
-        let str = this.formatSize(fileSize);
-        data.push({
-          key: file.fileId,
-          fileId: file.fileId,
-          name: file.name,
-          size: str
-        })
+    isVideo() {
+      let path = this.file.path;
+      let status = this.file.status;
+      if(path === undefined || status != 3) {
+        return false;
       }
-      return data;
-    },
-    checkedRowKeys: {
-      get() {
-        let files = this.message.extra.files;
-        let data = []; 
-        for(let file of files) {
-          if(file.accept) {
-            data.push(file.fileId);
-          }
-        }
-        return data;
-      },
-      set(keys) {
-        console.log("checkedRowKeys", keys);
-        this.$store.dispatch("updateSelectFiles", {
-          files: this.message.extra.files,
-          fileIds: keys
-        });
-      }
+      let name = this.file.name;
+      return isVideo(name);
     }
   },
   methods: {
-    formatSize(size) {
-      let str = "";
-      if (size < 1024) {
-        str = size + "B";
-      } else if (size < 1024 * 1024) {
-        str = Math.round(size / 1024) + "KB";
-      } else if (size < 1024 * 1024 * 1024) {
-        str = Math.round(size / (1024 * 1024)) + "MB";
-      } else if (size < 1024 * 1024 * 1024 * 1024) {
-        str = Math.round(size / (1024 * 1024 * 1024)) + "GB";
-      }
-      console.log("formatSize", str);
-      return str;
-    },
     handleAccept() {
-      console.log("handleAccept", this.message);
+      // console.log("handleAccept", this.message);
       let messageId = this.message.messageId;
       let remote = {
         feiq: this.$store.state.chatWith.feiq,
         address: this.$store.state.chatWith.address,
         port: this.$store.state.chatWith.port,
       };
-      let extra = {
-        fields: [
-          {
-            name: "status",
-            value: 2,
-          },
-        ],
-      };
-      // this.$store.dispatch("updateFileMessage", {
-      //   messageId,
-      //   remote,
-      //   extra,
-      // });
+      
       let packet = {
         packetId: this.message.packet.packetId,
       };
+
       let mainMsg = {
         info: {
           type: "recvFile",
@@ -309,14 +135,15 @@ export default {
         remote,
         packet,
         extra: {
-          files: this.message.extra.files,
+          files: [this.file],
         },
       };
       console.log("mainMsg", mainMsg);
       ipc.postMainMessage(mainMsg);
     },
+
     handleReject() {
-      console.log("handleReject", this.message);
+      // console.log("handleReject", this.message);
       let messageId = this.message.messageId;
       let remote = {
         address: this.$store.state.chatWith.address,
@@ -346,39 +173,57 @@ export default {
         packet,
       });
     },
+    options(){
+      return [
+        {
+          label: this.nls.chatFileOpenFile,
+          key: 'openFile'
+        },
+        {
+          label: this.nls.chatFileOpenFolder,
+          key: 'openInFolder'
+        }
+      ]
+    }, 
+    handleContextMenu (e) {
+      e.preventDefault()
+      this.showDropdown = false
+      this.$nextTick().then(() => {
+        this.showDropdown = true
+        this.x = e.clientX
+        this.y = e.clientY
+      })
+    },
+    handleSelect (key) {
+      this.showDropdown = false
+      if(key === "openFile") {
+        this.handleOpen();
+      } else if(key === "openInFolder") {
+        this.handleOpenFolder();
+      }
+    },
+    onClickoutside () {      
+      this.showDropdown = false
+    },
     handleOpen() {
-      let filename = undefined;
-      if(this.message.extra.files.length > 0) {
-        filename = this.message.extra.files[0].name;
+      let filepath = this.file.path;
+      if(filepath === undefined) {
+        filepath = `${this.message.extra.location}/${this.file.name}`
       }
-      if(filename !== undefined) {
-        ipc.openFile({
-          location: this.message.extra.location,
-          filename: filename,
-        });
-      }
+      ipc.openFile({
+        filepath: filepath
+      });
     },
     handleOpenFolder() {
-      let filename = undefined;
-      if(this.message.extra.files.length > 0) {
-        filename = this.message.extra.files[0].name;
+      let filepath = this.file.path;
+      if(filepath === undefined) {
+        filepath = `${this.message.extra.location}/${this.file.name}`
       }
-      if(filename !== undefined) {
-        ipc.openFolder({
-          location: this.message.extra.location,
-          filename: filename
-        });
-      }
-    },
-    handleFilesInfo() {
-      let status = this.message.extra.status;
-      if(status == 1) {
-        this.showSelectFiles = true;
-      } else if(status == 3 || status == 4) {
-        this.showFilesAccept = true;
-      }
-    },
-  },
+      ipc.openFolder({
+        filepath: filepath
+      });
+    }
+  }
 };
 </script>
 
@@ -386,65 +231,95 @@ export default {
 @import "../styles/mymsg.less";
 
 .your-chat-file {
-}
-
-.your-chat-file-container {
-  padding-left: 5px;
-  padding-right: 5px;
-  width: 100%;
   display: flex;
-  align-content: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
-.your-chat-file-container-file {
+.your-chat-mask {
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-.your-chat-file-icon {
-  color: darkgreen;
+.your-chat-file-content {
+  box-sizing: border-box;
+  padding: 5px;
+  border-radius: 5px;
+  min-height: 40px;
+  height: fit-content;
+  border: @msg-border-width solid;  
+  text-align: left;
 }
 
-.your-chat-file-container-icon {
-  color: rgb(128, 128, 128);
+.your-chat-file-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  z-index: 99;
+  background-color: rgba(192, 192, 192, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.your-chat-file-bubble {
+  display: flex;
+  margin-top: 10px;
+  &::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-right: 8px solid;
+  }
+}
+
+.vscode-light {
+  .your-chat-file-content {
+    border-color: @yours-border-color-light;
+    background-color: @yours-backgroud-color-light;
+    color: @msg-text-color;
+  }
+
+  .your-chat-file-bubble {
+    &::before {
+      border-right-color: @yours-border-color-light;
+    }
+  }
+}
+
+.vscode-dark {
+  .your-chat-file-content {
+    border-color: @yours-backgroud-color-dark;    
+    color: @msg-text-color-dark;
+    background-color: @yours-backgroud-color-dark;
+  }
+
+  .your-chat-file-bubble {
+    &::before {
+      border-right-color: @yours-border-color-dark;
+    }
+  }
 }
 
 .your-chat-file-status-accept,
 .your-chat-file-status-reject {
-  border: 1px solid rgb(128, 128, 128);
+  border: 1px solid gray;
+  margin: 2px;
+  padding: 2px 8px 2px 8px;
   font-size: 12px;
   cursor: pointer;
-}
-
-.your-chat-file-status {
-  width: 100%;
-  display: flex;
-}
-
-.your-chat-file-status-text {
-  width: fit-content;
-  padding-right: 5px;
-}
-
-.your-chat-file-status-progress {
-  flex: 1;
 }
 
 .your-chat-file-status-accept {
-  margin-right: 5px;
+  color: blue
 }
 
-.your-chat-file-container-name {
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.your-chat-file-container-size {
-  font-size: 12px;
-  color: gray;
-}
-
-.your-chat-file-date {
-  padding-top: 5px;
-  font-size: 10px;
+.your-chat-file-status-reject {
+  color: deeppink;
 }
 </style>

@@ -1,17 +1,18 @@
 <template>
   <n-config-provider :locale=locale :theme="theme">
     <n-notification-provider placement="bottom-right">
-      <div class="root">
+      <div v-if="$store.state.webRoot !== ''" class="root">
         <toolbar />
         <router-view />
       </div>
+      <div v-else>正在加载中</div>
     </n-notification-provider>
   </n-config-provider>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { NConfigProvider, NNotificationProvider, createTheme, commonDark, avatarDark, badgeDark, buttonDark, collapseDark, inputDark } from "naive-ui";
+import { NConfigProvider, NNotificationProvider, createTheme, commonDark, avatarDark, badgeDark, buttonDark, collapseDark, inputDark, dropdownDark } from "naive-ui";
 import { formDark, iconDark, progressDark, modalDark, dataTableDark, tooltipDark, tabsDark, listDark, selectDark, switchDark, inputNumberDark, scrollbarDark } from "naive-ui";
 import { zhCN } from 'naive-ui'
 // import { useNotification } from 'naive-ui'
@@ -42,7 +43,8 @@ export default defineComponent({
         selectDark,
         switchDark,
         inputNumberDark,
-        scrollbarDark
+        scrollbarDark,
+        dropdownDark
       ]),
       // notification
     }

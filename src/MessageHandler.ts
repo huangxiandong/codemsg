@@ -23,6 +23,7 @@ function handleRecvFile(remote: any, packet: any, extra: any, webview: vscode.We
       },{
         packetId: packet.packetId,
       },{
+        fileId: extra.files[0].fileId,
         fields: [{
           name: "status",
           value: 2,
@@ -70,7 +71,8 @@ function handleSendFile(remote: any, packet: any, webview: vscode.Webview, folde
           path: filepath,
           size: fi.size,
           type: isFolder?1:0,
-          accept: false
+          accept: false,
+          status: 1
         });
         fileId++;
       }
@@ -121,7 +123,8 @@ function handleDropFile(remote: any, packet: any, extra: any, webview: vscode.We
       path: filepath,
       size: fi.size,
       type: isFolder?1:0,
-      accept: false
+      accept: false,
+      status: 1
     });
     fileId++;
   }
@@ -329,25 +332,13 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case 'openFile': {
-      let homeFolder = path.join(os.homedir(), ".codemsg");
-      let location = e.location;
-      if(location === undefined || location==="") {
-        location = homeFolder;
-      }
-      let filename = e.filename;
-      let filepath = location + "/" + filename;
+      let filepath = e.filepath;
       let fileuri = vscode.Uri.file(filepath);
       vscode.commands.executeCommand("vscode.open", fileuri);
     }
     break;
     case 'openFolder': {
-      let homeFolder = path.join(os.homedir(), ".codemsg");
-      let location = e.location;
-      if(location === undefined || location==="") {
-        location = homeFolder;
-      }
-      let filename = e.filename;
-      let filepath = location + "/" + filename;
+      let filepath = e.filepath;
       let fileuri = vscode.Uri.file(filepath);
       vscode.commands.executeCommand("revealFileInOS", fileuri);
     }

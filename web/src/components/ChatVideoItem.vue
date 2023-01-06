@@ -12,22 +12,21 @@
 export default {
   name: "ChatVideoItem",
   props: {
-    message: {
+    file: {
       type: Object,
       required: true
     },
   },
   computed: {
     src() {
-      let location = this.message.extra.location;
+      let location = this.file.path;
       location = location.replace(/\\/g, "/");
-      let name = this.message.extra.files[0].name;
-      console.log("location++", location);
-      console.log("name++", name);
-      return `https://file%2B.vscode-resource.vscode-cdn.net/${location}`;
+      let name = this.file.name;
+      console.log("web url", `${this.$store.state.webRoot}${location}`)
+      return `${this.$store.state.webRoot}${location}`;
     },
     type() {
-      let name = this.message.extra.files[0].name;
+      let name = this.file.name;
       let index = name.lastIndexOf(".");
       if(index != -1) {
         let surfix = name.substring(index+1);
@@ -45,8 +44,8 @@ export default {
 @import "../styles/mymsg.less";
 
 .chat-video-item {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .chat-video-item-img {

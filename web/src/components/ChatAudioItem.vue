@@ -12,19 +12,18 @@
 export default {
   name: "ChatAudioItem",
   props: {
-    message: {
+    file: {
       type: Object,
       required: true
     },
   },
   computed: {
     src() {
-      let location = this.message.extra.location;
+      let location = this.file.path;
       location = location.replace(/\\/g, "/");
-      let name = this.message.extra.files[0].name;
-      console.log("location++", location);
-      console.log("name++", name);
-      return `https://file%2B.vscode-resource.vscode-cdn.net/${location}`;
+      let name = this.file.name;
+      console.log("web url", `${this.$store.state.webRoot}${location}`)
+      return `${this.$store.state.webRoot}${location}`;
     }
   }
 }
@@ -34,8 +33,8 @@ export default {
 @import "../styles/mymsg.less";
 
 .chat-audio-item {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .chat-audio-item-img {

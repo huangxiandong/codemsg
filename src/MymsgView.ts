@@ -180,6 +180,10 @@ export class MymsgView {
 		const uriRoot = webviewPanel.webview.asWebviewUri(furi).toString();
 		console.log("uriRoot", uriRoot);
 
+		let webUri = vscode.Uri.file("/");
+		const webRoot = webviewPanel.webview.asWebviewUri(webUri).toString();
+		console.log("webRoot", webRoot);
+
 		webviewPanel.webview.postMessage({
 			type: 'locale',
 			locale: vscode.env.language
@@ -215,7 +219,8 @@ export class MymsgView {
 
 		webviewPanel.webview.postMessage({
 			type: "setUriRoot",
-			uriRoot: uriRoot
+			uriRoot: uriRoot,
+			webRoot: webRoot
 		})
 		this.setActiveTheme();
 		this.setIPList();

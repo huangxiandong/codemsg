@@ -10,6 +10,10 @@ Just for fun!
 * Message Send/Receive encrypted extension(only support RSA-2048, AES-256 and SHA1/SHA256)
 
 ## What's new ?
+* ### Version 0.5.0
+  * Render image, audio and video in conversition.
+  * Some changes of UI.
+  * Fix Some bugs.
 * ### Version 0.4.1
   * Drag & Drop support for sending files and folders.
   
@@ -25,6 +29,7 @@ If you are concerned about the above precautions, please use it with caution.
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/1.png?>
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/2.png?>
 <img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/3.png?>
+<img src=https://raw.githubusercontent.com/huangxiandong/codemsg/main/snapshots/4.png?>
 
 ## License
 

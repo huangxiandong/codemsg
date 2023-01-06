@@ -1,8 +1,5 @@
 <template>
-  <div class="chat-text-item">
-    <div class="chat-text-item-text" :style="{ fontSize: textFontSize + 'px'}" v-html="html"></div>
-    <div class="chat-text-item-date">{{message.info.date}}</div>
-  </div>
+  <div class="chat-text-item" :style="{ fontSize: textFontSize + 'px'}" v-html="html"></div>
 </template>
 
 <script>
@@ -81,16 +78,7 @@ export default {
 @import "../styles/mymsg.less";
 
 .chat-text-item {
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-.chat-text-item-text {
   user-select: text;
 }
 
-.chat-text-item-date {
-  padding-top: 5px;
-  font-size: 10px;
-}
 </style>
