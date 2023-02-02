@@ -15,7 +15,7 @@
     </div>
     <div id="chat-resizer" class="m-resizer"></div>
     <div class="chat-bottom" :style="{ height: inputHeigth + 'px' }">
-      <div class="chat-toolbar">
+      <div id="chat-toolbar" class="chat-toolbar">
         <n-tooltip trigger="hover">
           <template #trigger>
             <n-icon
@@ -56,7 +56,10 @@
         </template>
       </div>
       <div class="chat-input">
-        <div id="chat-editor" class="chat-input-area" @keydown.enter="handleEnter($event)" @click="showEmojiPanel = false">          
+        <!-- <div id="chat-editor" class="chat-input-area" @keydown.enter="handleEnter($event)" @click="showEmojiPanel = false">          
+        </div> -->
+        <div class="chat-input-area">
+          <QuillEditor :options="options" toolbar="#chat-toolbar" contentType="html" v-model:content="inputMsg" @ready="quillReady($event)"/>
         </div>
         <n-button
           strong secondary
@@ -104,6 +107,7 @@
 
 <script>
 import { defineComponent } from "vue";
+import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
 import { NInput, NIcon, NTooltip, NButton, NScrollbar, NModal } from "naive-ui";
 import { File, Folder } from "@vicons/tabler";
 import { Emoji16Regular } from "@vicons/fluent";
@@ -112,7 +116,9 @@ import ChatItem from "@/components/ChatItem.vue";
 import ipc from "@/ipc";
 import { formatDate, generateId } from "@/utils/util";
 import EmojiPanel from "@/components/EmojiPanel.vue";
-import WangEditor from "wangeditor";
+// import WangEditor from "wangeditor"
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 export default defineComponent({
   name: "Chat",
@@ -129,14 +135,53 @@ export default defineComponent({
     Attach20Filled,
     ChatItem,
     EmojiPanel,
+    QuillEditor
+  },
+  setup() {
+    // 编辑器实例，必须用 shallowRef
+    const editorRef = shallowRef()
+
+    const inputMsg = ref("")
+
+    // 组件销毁时，也及时销毁编辑器
+    onBeforeUnmount(() => {
+        const editor = editorRef.value
+        if (editor == null) return
+        editor.destroy()
+    })
+
+    const handleCreated = (editor) => {
+      editorRef.value = editor // 记录 editor 实例，重要！
+    }
+
+    const sendMessage = () => {
+      const editor = editorRef.value;
+      const html = editor.getHtml();
+      const text = editor.getText();
+      console.log("inputMsg", inputMsg.value);
+      console.log("getHtml", html);
+      console.log("getText", text);
+    }
+
+    return {
+      editorRef,
+      inputMsg,
+      handleCreated,
+      sendMessage,
+    };
   },
   data() {
     return {
-      inputMsg: "",
       showEmojiPanel: false,
       editor: undefined,
       showDrop: false,
-      dropFiles: []
+      dropFiles: [],
+      editorConfig: { placeholder: '请输入内容...' },
+      mode: 'simple', // or 'simple',
+      options: {
+        placeholder: 'New message',
+        theme: 'snow'
+      }
     };
   },
   computed: {
@@ -173,6 +218,10 @@ export default defineComponent({
     },
   },
   methods: {
+    quillReady(quill) {
+      console.log("quill", quill);
+      this.editor = quill.getEditor();
+    },
     handleEnter(event) {
       if (event.ctrlKey && event.keyCode === 13) {
         
@@ -182,68 +231,74 @@ export default defineComponent({
         return false;
       }
     },
-    sendMessage() {
-      let json = this.editor.txt.getJSON();
-      // let msg = json;
-      let msg = this.toTextMsg(json);
-      if (msg === "") {
-        return false;
-      }
-      console.log("handleEnter", msg);
-      if (this.$store.state.chatWith !== undefined) {
-        let packetId = generateId();
-        let messageId = packetId + "";
-        let now = new Date();
-        let dateStr = formatDate(now, "yyyy-MM-dd HH:mm:ss");
-        let info = {
-          type: "text",
-          mine: true,
-          read: true,
-          date: dateStr,
-        };
-        let remote = {
-          feiq: this.$store.state.chatWith.feiq,
-          address: this.$store.state.chatWith.address,
-          port: this.$store.state.chatWith.port,
-          nickname: this.$store.state.chatWith.nickname,
-          group: this.$store.state.chatWith.group,
-        };
-        let packet = {
-          packetId: packetId,
-          version: "1",
-        };
-        let extra = {
-          text: msg,
-        };
-        let newMsg = {
-          messageId,
-          order: now.getTime(),
-          info,
-          remote,
-          packet,
-          extra,
-        };
-        let obj = {
-          pos: -1,
-          message: newMsg,
-        };
-        this.$store.dispatch("addMessage", obj);
-        // console.log("chat", this.$store.state.chatWith);
-        ipc.postMainMessage({
-          id: messageId,
-          info: {
-            type: "sendMsg",
-          },
-          remote,
-          packet,
-          extra,
-        });
-        ipc.log(newMsg);
-      }
-      this.inputMsg = "";
-      this.editor.txt.clear()
-      this.$store.dispatch("increaseMessage");      
-    },
+    // sendMessage() {
+    //   const editor = this.editorRef.value;
+    //   console.log(this.editorRef);
+    //   const html = editor.getHtml();
+    //   const text = editor.getText();
+    //   console.log("getHteml", html);
+    //   console.log("getText", text);
+      // let json = this.editor.txt.getJSON();
+      // // let msg = json;
+      // let msg = this.toTextMsg(json);
+      // if (msg === "") {
+      //   return false;
+      // }
+      // console.log("handleEnter", msg);
+      // if (this.$store.state.chatWith !== undefined) {
+      //   let packetId = generateId();
+      //   let messageId = packetId + "";
+      //   let now = new Date();
+      //   let dateStr = formatDate(now, "yyyy-MM-dd HH:mm:ss");
+      //   let info = {
+      //     type: "text",
+      //     mine: true,
+      //     read: true,
+      //     date: dateStr,
+      //   };
+      //   let remote = {
+      //     feiq: this.$store.state.chatWith.feiq,
+      //     address: this.$store.state.chatWith.address,
+      //     port: this.$store.state.chatWith.port,
+      //     nickname: this.$store.state.chatWith.nickname,
+      //     group: this.$store.state.chatWith.group,
+      //   };
+      //   let packet = {
+      //     packetId: packetId,
+      //     version: "1",
+      //   };
+      //   let extra = {
+      //     text: msg,
+      //   };
+      //   let newMsg = {
+      //     messageId,
+      //     order: now.getTime(),
+      //     info,
+      //     remote,
+      //     packet,
+      //     extra,
+      //   };
+      //   let obj = {
+      //     pos: -1,
+      //     message: newMsg,
+      //   };
+      //   this.$store.dispatch("addMessage", obj);
+      //   // console.log("chat", this.$store.state.chatWith);
+      //   ipc.postMainMessage({
+      //     id: messageId,
+      //     info: {
+      //       type: "sendMsg",
+      //     },
+      //     remote,
+      //     packet,
+      //     extra,
+      //   });
+      //   ipc.log(newMsg);
+      // }
+      // this.inputMsg = "";
+      // this.editor.txt.clear()
+      // this.$store.dispatch("increaseMessage");      
+    // },
     handleFile() {
       console.log("send file");
       if (this.$store.state.chatWith !== undefined) {
@@ -326,6 +381,7 @@ export default defineComponent({
       this.showEmojiPanel = false;
       this.editor.config.focus = true;
     },
+
     appendEmoji(emoji) {
       // console.log("emoji", emoji);
       const uriRoot = this.$store.state.uriRoot;
@@ -333,8 +389,9 @@ export default defineComponent({
       let clazz = `emoji-item emoji-common emoji-${emoji}`;
       let html = `<img alt="${emoji}" src="${uriRoot}/emoji/mask.png" class="${clazz}" style="${style}">`;
       console.log("html", html);
-      this.editor.cmd.do('insertHTML', html)
+      this.editor.pasteHTML(html)
     },
+
     toTextMsg(json) {
       let text = "";
       let p = json[0];
@@ -408,13 +465,19 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.editor = new WangEditor("#chat-editor");
-    this.editor.config.showFullScreen = false;
-    this.editor.config.focus = true;
-    this.editor.config.zIndex = 99;
-    // this.editor.config.placeholder = this.nls.chatInputPlacehoder;
-    this.editor.config.placeholder = "New Message";
-    this.editor.create();
+    // this.editor = new WangEditor("#chat-editor");
+    // this.editor.config.showFullScreen = false;
+    // this.editor.config.focus = true;
+    // this.editor.config.zIndex = 99;
+    // // this.editor.config.placeholder = this.nls.chatInputPlacehoder;
+    // this.editor.config.placeholder = "New Message";
+    // // 配置粘贴文本的内容处理
+    // this.editor.config.pasteTextHandle = function (pasteStr) {
+    //   console.log("wangeditor", pasteStr);
+    //     // 对粘贴的文本进行处理，然后返回处理后的结果
+    //     return pasteStr + '巴拉巴拉'
+    // }
+    // this.editor.create();
 
     this.$nextTick(() => {
       // this.$refs.chatInput.focus();
@@ -442,6 +505,9 @@ export default defineComponent({
     })
     // 被拖动的对象进入目标容器，释放鼠标键
     chat.addEventListener('drop', this.handleDrop);
+  },
+  beforeUnmount() {
+    console.log("beforeUnmount");
   },
   watch: {
     "$store.state.count"(newVal) {
@@ -530,6 +596,8 @@ export default defineComponent({
 }
 
 .vscode-dark {
+  --w-e-textarea-bg-color: #333;
+  --w-e-textarea-color: rgba(255, 255, 255, 0.82);
   .w-e-text {
     color: rgba(255, 255, 255, 0.82);
     caret-color: #63e2b7;
@@ -594,11 +662,6 @@ export default defineComponent({
   display: none !important;
 }
 
-.emoji-item {
-  zoom: 0.4;
-  vertical-align: middle;
-}
-
 .drop-attachment {
   display: flex;
   align-items: center;
@@ -606,6 +669,226 @@ export default defineComponent({
 
 .drop-attachment-icon {
   color: green;
+}
+
+.chat-input-area {
+  .emoji-item {
+  zoom: 0.4;
+  vertical-align: middle;
+}
+  .emoji-common {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+
+.emoji-angry {
+  background-position: -0px -0px !important;
+}
+
+.emoji-anguished {
+  background-position: -64px -0px !important;
+}
+
+.emoji-astonished {
+  background-position: -128px -0px !important;
+}
+
+.emoji-blush{
+  background-position: -192px -0px !important;
+}
+
+.emoji-cold_sweat {
+  background-position: -256px -0px !important;
+}
+
+.emoji-confounded {
+  background-position: -320px -0px !important;
+}
+
+.emoji-confused {
+  background-position: -384px -0px !important;
+}
+
+.emoji-cry {
+  background-position: -448px -0px !important;
+}
+
+.emoji-disappointed {
+  background-position: -512px -0px !important;
+}
+
+.emoji-disappointed_relieved {
+  background-position: -0px -64px !important;
+}
+
+.emoji-dizzy_face {
+  background-position: -64px -64px !important;
+}
+
+.emoji-expressionless {
+  background-position: -128px -64px !important;
+}
+
+.emoji-fearful {
+  background-position: -192px -64px !important;
+}
+
+.emoji-flushed {
+  background-position: -256px -64px !important;
+}
+
+.emoji-frowning {
+  background-position: -320px -64px !important;
+}
+
+.emoji-grimacing {
+  background-position: -384px -64px !important;
+}
+
+.emoji-grin {
+  background-position: -448px -64px !important;
+}
+
+.emoji-grinning {
+  background-position: -512px -64px !important;
+}
+
+.emoji-heart_eyes {
+  background-position: -0px -128px !important;
+}
+
+.emoji-hushed {
+  background-position: -64px -128px !important;
+}
+
+.emoji-innocent {
+  background-position: -128px -128px !important;
+}
+
+.emoji-joy {
+  background-position: -192px -128px !important;
+}
+
+.emoji-kissing_closed_eyes {
+  background-position: -256px -128px !important;
+}
+
+.emoji-kissing_heart {
+  background-position: -320px -128px !important;
+}
+
+.emoji-laughing {
+  background-position: -384px -128px !important;
+}
+
+.emoji-neutral_face {
+  background-position: -448px -128px !important;
+}
+
+.emoji-no_mouth {
+  background-position: -512px -128px !important;
+}
+
+.emoji-open_mouth {
+  background-position: -0px -192px !important;
+}
+
+.emoji-pensive {
+  background-position: -64px -192px !important;
+}
+
+.emoji-persevere {
+  background-position: -128px -192px !important;
+}
+
+.emoji-relaxed {
+  background-position: -192px -192px !important;
+}
+
+.emoji-relieved {
+  background-position: -256px -192px !important;
+}
+
+.emoji-sleepy {
+  background-position: -320px -192px !important;
+}
+
+.emoji-smile {
+  background-position: -384px -192px !important;
+}
+
+.emoji-smiley {
+  background-position: -448px -192px !important;
+}
+
+.emoji-smirk {
+  background-position: -512px -192px !important;
+}
+
+.emoji-sob {
+  background-position: -0px -256px !important;
+}
+
+.emoji-stuck_out_tongue {
+  background-position: -64px -256px !important;
+}
+
+.emoji-sunglasses {
+  background-position: -128px -256px !important;
+}
+
+.emoji-sweat {
+  background-position: -192px -256px !important;
+}
+
+.emoji-sweat_smile {
+  background-position: -256px -256px !important;
+}
+
+.emoji-scream {
+  background-position: -320px -256px !important;
+}
+
+.emoji-wink {
+  background-position: -384px -256px !important;
+}
+
+.emoji-unamused {
+  background-position: -448px -256px !important;
+}
+
+.emoji-satisfied {
+  background-position: -512px -256px !important;
+}
+
+.emoji-worried {
+  background-position: -0px -320px !important;
+}
+
+.emoji-stuck_out_tongue_closed_eyes {
+  background-position: -64px -320px !important;
+}
+
+.emoji-weary {
+  background-position: -128px -320px !important;
+}
+
+.emoji-yum {
+  background-position: -192px -320px !important;
+}
+
+.emoji-tired_face {
+  background-position: -256px -320px !important;
+}
+
+.emoji-triumph {
+  background-position: -320px -320px !important;
+}
+
+.emoji-stuck_out_tongue_winking_eye {
+  background-position: -384px -320px !important;
+}
 }
 
 @import "../styles/emoji.less";
