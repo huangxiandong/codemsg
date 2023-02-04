@@ -49,12 +49,14 @@ function handleEntry(type, remote, packet, extra) {
       content: content
     });
   } else {
-    store.state.notifier.create({
-      title: `${store.state.nls.notificationOnlineTitle}`,
-      content: content,
-      duration: 5000,
-      closable: false     
-    });
+    if(store.state.notifier !==undefined) {
+      store.state.notifier.create({
+        title: `${store.state.nls.notificationOnlineTitle}`,
+        content: content,
+        duration: 5000,
+        closable: false     
+      });  
+    }
   }
 }
 
@@ -96,12 +98,14 @@ function handleExit(type, remote, packet, extra) {
         content: `${findContact.nickname} ${store.state.nls.notificationOfflineTitle}`
       });
     } else {
-      store.state.notifier.create({
-        title: `${store.state.nls.notificationOfflineTitle}`,
-        content: `${findContact.nickname} ${store.state.nls.notificationOfflineTitle}`,
-        duration: 5000,
-        closable: false     
-      });
+      if(store.state.notifier !==undefined) {
+        store.state.notifier.create({
+          title: `${store.state.nls.notificationOfflineTitle}`,
+          content: `${findContact.nickname} ${store.state.nls.notificationOfflineTitle}`,
+          duration: 5000,
+          closable: false     
+        });
+      }
     }
   }
   store.dispatch("removeContact", contact);
@@ -182,12 +186,14 @@ function handleMessage(type, remote, packet, extra, mine, read) {
         content: content
       });
     } else {
-      store.state.notifier.create({
-        title: `${store.state.nls.notificationMsgTitle}`,
-        content: content,
-        duration: 5000,
-        closable: false     
-      });
+      if(store.state.notifier !==undefined) {
+        store.state.notifier.create({
+          title: `${store.state.nls.notificationMsgTitle}`,
+          content: content,
+          duration: 5000,
+          closable: false     
+        });
+      }
     }
   }
 }
