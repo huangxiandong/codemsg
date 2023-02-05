@@ -16,15 +16,7 @@
     <div id="chat-resizer" class="m-resizer"></div>
     <div class="chat-bottom" :style="{ height: inputHeigth + 'px' }">
       <div class="chat-input">
-        <chat-editor class="chat-input-area" :sendTextMethod="sendMessage" :sendFileMethod="handleFile" :sendFolderMethod="handleFolder" />
-        <n-button
-          strong secondary
-          type="primary"
-          class="chat-send-button"
-          @click="sendMessage"
-          attr-type="button"
-          >{{ nls.chatSendButton }}</n-button
-        >
+        <chat-editor class="chat-input-area" :sendTextMethod="sendMessage" :sendFileMethod="handleFile" :sendFolderMethod="handleFolder" :fileTitle="nls.chatSendFileTooltip" :folderTitle="nls.chatSendFolderTooltip" />
       </div>
     </div>
   </div>
@@ -168,7 +160,6 @@ export default defineComponent({
         ipc.log(newMsg);
       }
       this.inputMsg = "";
-      this.editor.txt.clear()
       this.$store.dispatch("increaseMessage");      
     },
     handleFile() {
