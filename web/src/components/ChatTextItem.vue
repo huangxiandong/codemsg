@@ -18,31 +18,48 @@ export default {
     html() {
       const uriRoot = this.$store.state.uriRoot;
       let text = this.message.extra.text;
-      // console.log("chat text", text);
-      let myHtml = text;
-      
-      let text_http = "";
-      let pos = 0;
-      if(myHtml !== undefined) {
+      let myHtml = "";
+      if(text !== undefined) {
         do {
-          let start = myHtml.indexOf("http://");
+          let start = text.indexOf("http://");
           if(start == -1) {
-            text_http = myHtml;
-            pos = myHtml.length;
+            myHtml = `${myHtml}${text}`
+            text = "";
           } else {
-            let end = myHtml.indexOf(" ", start+1);
+            let end = text.indexOf(" ", start+1);
             if(end == -1) {
-              end = myHtml.length;
+              end = text.length;              
             }
-            pos = end;
-            let url = myHtml.substring(start, end);
-            text_http = `${text_http}<a href="${url}">${url}</a>`
+            let prefix = text.substring(0, start);
+            let url = text.substring(start, end);
+            myHtml = `${myHtml}${prefix}<a href="${url}">${url}</a>`
+            text = text.substring(end);
           }
-        } while(pos < text.length)
+        } while(text.length > 0)
       }
-      myHtml = text_http;
+      text = myHtml;
+      myHtml = "";
+      if(text !== undefined) {
+        do {
+          let start = text.indexOf("https://");
+          if(start == -1) {
+            myHtml = `${myHtml}${text}`
+            text = "";
+          } else {
+            let end = text.indexOf(" ", start+1);
+            if(end == -1) {
+              end = text.length;              
+            }
+            let prefix = text.substring(0, start);
+            let url = text.substring(start, end);
+            myHtml = `${myHtml}${prefix}<a href="${url}">${url}</a>`
+            text = text.substring(end);
+          }
+        } while(text.length > 0)
+      }
+
       myHtml = `<p style="margin:2px">${myHtml}</p>`
-      // console.log("myHtml", myHtml);
+      // console.log("chat text", myHtml);
       return myHtml;
     }
   }
@@ -54,6 +71,8 @@ export default {
 
 .chat-text-item {
   user-select: text;
+  max-width: 400px;
+  word-break: break-word;
 }
 
 </style>

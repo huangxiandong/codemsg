@@ -46,9 +46,7 @@ export default {
     sendTextMethod: {
       type: Function,
       required: true
-    },
-    fileTitle: String,
-    folderTitle: String,
+    }
   },
   components: { 
     Editor, Toolbar, NButton 
@@ -150,7 +148,7 @@ export default {
   position: absolute;
   bottom: 10px;
   right: 30px;
-  z-index: 999;
+  // z-index: 999;
 }
 
 .w-e-text-container p {

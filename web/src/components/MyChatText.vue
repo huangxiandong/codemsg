@@ -41,6 +41,7 @@ export default {
   min-height: 40px;
   height: fit-content;
   border: 1px solid;
+  text-align: left;
 }
 
 .my-chat-text-bubble {

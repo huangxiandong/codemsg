@@ -1,5 +1,5 @@
 <template>
-  <div class="chat" ref="chat">
+  <div class="chat" ref="chatRef">
     <div class="chat-top">
       <div class="chat-name">
         <span>{{ chatName }}</span>
@@ -16,9 +16,29 @@
     <div id="chat-resizer" class="m-resizer"></div>
     <div class="chat-bottom" :style="{ height: inputHeigth + 'px' }">
       <div class="chat-input">
-        <chat-editor class="chat-input-area" :sendTextMethod="sendMessage" :sendFileMethod="handleFile" :sendFolderMethod="handleFolder" :fileTitle="nls.chatSendFileTooltip" :folderTitle="nls.chatSendFolderTooltip" />
+        <chat-editor class="chat-input-area" :sendTextMethod="sendMessage" :sendFileMethod="handleFile" :sendFolderMethod="handleFolder" />
       </div>
     </div>
+    <n-modal
+      v-model:show="showDrop"
+      :show-icon="false"
+      :mask-closable="false"
+      preset="dialog"
+      :title="modalTitle"
+      :positive-text="nls.chatOKTitle"
+      :negative-text="nls.chatCancelTitle"
+      @positive-click="onPositiveClick"
+      @negative-click="onNegativeClick">
+      <div class="drop-attachment" v-for="file in dropFiles">
+        <n-icon
+            size="24"
+            class="drop-attachment-icon"
+          >
+            <attach20-filled />
+        </n-icon>
+        <div>{{file}}</div>
+      </div>
+    </n-modal>
   </div>
 </template>
 
@@ -254,6 +274,7 @@ export default defineComponent({
       }
     },
     handleDrop(e) {
+      console.log("handleDrop");
       if(this.$store.state.chatWith === undefined) {
         return;
       }
@@ -280,7 +301,7 @@ export default defineComponent({
       });
     });
 
-    const chat = this.$refs.chat
+    const chat = this.$refs.chatRef
     // 被拖动的对象进入目标容器
     chat.addEventListener('dragover', e => {
       e.preventDefault()
@@ -298,6 +319,7 @@ export default defineComponent({
     })
     // 被拖动的对象进入目标容器，释放鼠标键
     chat.addEventListener('drop', this.handleDrop);
+    console.log("mounted", "handleDrop");
   },
   beforeUnmount() {
     console.log("beforeUnmount");
