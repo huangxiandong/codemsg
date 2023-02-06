@@ -32,8 +32,6 @@ import { Attach20Filled } from "@vicons/fluent";
 import ChatItem from "@/components/ChatItem.vue";
 import ipc from "@/ipc";
 import { formatDate, generateId } from "@/utils/util";
-import EmojiPanel from "@/components/EmojiPanel.vue";
-// import WangEditor from "wangeditor";
 import ChatEditor from "@/components/ChatEditor.vue";
 
 export default defineComponent({
@@ -50,17 +48,12 @@ export default defineComponent({
     Emoji16Regular,
     Attach20Filled,
     ChatItem,
-    EmojiPanel,
     ChatEditor
   },
   data() {
     return {
-      showEmojiPanel: false,
-      editor: undefined,
       showDrop: false,
       dropFiles: [],
-      // editorConfig: { placeholder: '请输入内容...' },
-      // mode: 'default', // or 'simple',
     };
   },
   computed: {
@@ -97,15 +90,6 @@ export default defineComponent({
     },
   },
   methods: {
-     handleEnter(event) {
-      if (event.ctrlKey && event.keyCode === 13) {
-        
-      } else if(event.keyCode === 13) {
-        event.preventDefault();
-        this.sendMessage();
-        return false;
-      }
-    },
     sendMessage(msg) {
       console.log("sendMessage", msg);
       msg = msg.replace("<p>", "").replace("</p>", "");
@@ -237,47 +221,7 @@ export default defineComponent({
         return false;
       };
     },
-    handleEmoji() {
-      this.showEmojiPanel = !this.showEmojiPanel;
-    },
-    hideEmojiPanel() {
-      this.showEmojiPanel = false;
-      this.editor.config.focus = true;
-    },
 
-    appendEmoji(emoji) {
-      // console.log("emoji", emoji);
-      const uriRoot = this.$store.state.uriRoot;
-      let style = `background-image: url('${uriRoot}/emoji/emoji_sprite.png');`
-      let clazz = `emoji-item emoji-common emoji-${emoji}`;
-      let html = `<img alt="${emoji}" src="${uriRoot}/emoji/mask.png" class="${clazz}" style="${style}">`;
-      console.log("html", html);
-      this.editorRef.dangerouslyInsertHtml(html)
-    },
-
-    toTextMsg(json) {
-      let text = "";
-      let p = json[0];
-      let children = p.children;
-      if(children !== undefined) {
-        for(let child of children) {
-          if(typeof child === "string") {
-            text = `${text}${child}`;
-          } else if(typeof child === 'object') {
-            let tag = child.tag;
-            if(tag === "img") {
-              let altObj = child.attrs.find(obj => obj.name === 'alt'); 
-              text = `${text}:${altObj.value}:`;
-            } else {
-              if(child.children.length > 0) {
-                text = `${text}${child.children[0]}`;
-              }
-            }
-          }
-        }
-      }
-      return text;
-    },
     onNegativeClick () {
       this.showDrop = false
     },
@@ -328,20 +272,6 @@ export default defineComponent({
     }
   },
   mounted() {
-    // this.editor = new WangEditor("#chat-editor");
-    // this.editor.config.showFullScreen = false;
-    // this.editor.config.focus = true;
-    // this.editor.config.zIndex = 99;
-    // // this.editor.config.placeholder = this.nls.chatInputPlacehoder;
-    // this.editor.config.placeholder = "New Message";
-    // // 配置粘贴文本的内容处理
-    // this.editor.config.pasteTextHandle = function (pasteStr) {
-    //   console.log("wangeditor", pasteStr);
-    //     // 对粘贴的文本进行处理，然后返回处理后的结果
-    //     return pasteStr + '巴拉巴拉'
-    // }
-    // this.editor.create();
-
     this.$nextTick(() => {
       // this.$refs.chatInput.focus();
       this.dragControllerDiv();
@@ -433,45 +363,6 @@ export default defineComponent({
   // overflow: scroll;
 }
 
-.chat-toolbar {
-  // border-top: 1px solid gray;
-  height: 30px;
-  display: flex;
-  align-items: center;
-}
-
-.vscode-light {
-  .w-e-text {
-    color: rgba(51, 54, 57, 1);
-    caret-color: #18a058;
-  }
-  .w-e-text-container {
-    .placeholder {
-      color: rgba(194, 194, 194, 1);
-    }
-  }
-}
-.chat-toolbar-icon {
-  color: gray;
-  &:hover {
-    color: green;
-  }
-}
-
-.vscode-dark {
-  --w-e-textarea-bg-color: #333;
-  --w-e-textarea-color: rgba(255, 255, 255, 0.82);
-  .w-e-text {
-    color: rgba(255, 255, 255, 0.82);
-    caret-color: #63e2b7;
-  }
-  .w-e-text-container {
-    .placeholder {
-      color: rgba(255, 255, 255, 0.38);
-    }
-  }
-}
-
 .chat-input {
   border-top: 1px solid gray;
   // border-left: 1px solid gray;
@@ -487,43 +378,6 @@ export default defineComponent({
   word-break: break-word;
 }
 
-.chat-send-button {
-  position: absolute;
-  bottom: 10px;
-  right: 30px;
-  z-index: 999;
-}
-
-.chat-emoji-pannel {
-  z-index: 100;
-  display: block;
-  position: absolute;
-  top: -150px;
-  left: 2px;
-}
-
-.chat-emoji-modal {
-  z-index: 99;
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0);
-}
-
-.w-e-text-container {
-  height: 100% !important;
-  border: unset !important;
-  border-bottom: unset !important;
-  background-color: unset !important;
-}
-.w-e-text {
-  height: 100% !important;
-  background-color: unset !important;
-}
-
-
 .drop-attachment {
   display: flex;
   align-items: center;
@@ -533,5 +387,4 @@ export default defineComponent({
   color: green;
 }
 
-@import "../styles/emoji.less";
 </style>

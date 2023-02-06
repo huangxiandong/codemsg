@@ -19,33 +19,8 @@ export default {
       const uriRoot = this.$store.state.uriRoot;
       let text = this.message.extra.text;
       // console.log("chat text", text);
-      let myHtml = "";
-      if(text !== undefined) {
-        do {
-          let start = text.indexOf(":");
-          // console.log("start", start);
-          if(start == -1) {
-            myHtml = `${myHtml}${text}`
-            text = "";
-          } else {
-            let end = text.indexOf(":", start+1);
-            // console.log("end", end);
-            if(end == -1) {
-              myHtml = `${myHtml}${text}`
-              text = "";
-            } else {
-              let emoji = text.substring(start+1, end);
-              // console.log("emoji", emoji);
-              let style = `background-image: url('${uriRoot}/emoji/emoji_sprite.png');`
-              let clazz = `emoji-item emoji-common emoji-${emoji}`;
-              let eHtml = `<img alt="${emoji}" src="${uriRoot}/emoji/mask.png" class="${clazz}" style="${style}">`;
-              let prefix =  text.substring(0, start);
-              myHtml = `${myHtml}${prefix}${eHtml}`;
-              text = text.substring(end+1);
-            }
-          }
-        } while(text.length > 0)
-      }
+      let myHtml = text;
+      
       let text_http = "";
       let pos = 0;
       if(myHtml !== undefined) {
