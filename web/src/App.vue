@@ -68,18 +68,18 @@ export default defineComponent({
   },
   mounted() {
     let store = this.$store;
-    document.onkeydown = function(e) {
-      // console.log("e=====", e);
-      if((e.key==="."||e.key===">") && e.ctrlKey && e.shiftKey) {
-        let size = store.state.textFontSize + 1;
-        store.commit("setTextFontSize", size);
-         console.log("font + 1", store.state.textFontSize);
-      } else if((e.key===","||e.key==="<") && e.ctrlKey  && e.shiftKey) {
-        let size = store.state.textFontSize - 1;
-        store.commit("setTextFontSize", size);
-        console.log("font - 1", store.state.textFontSize);
-      }
-    }
+    // document.onkeydown = function(e) {
+    //   // console.log("e=====", e);
+    //   if((e.key==="."||e.key===">") && e.ctrlKey && e.shiftKey) {
+    //     let size = store.state.textFontSize + 1;
+    //     store.commit("setTextFontSize", size);
+    //      console.log("font + 1", store.state.textFontSize);
+    //   } else if((e.key===","||e.key==="<") && e.ctrlKey  && e.shiftKey) {
+    //     let size = store.state.textFontSize - 1;
+    //     store.commit("setTextFontSize", size);
+    //     console.log("font - 1", store.state.textFontSize);
+    //   }
+    // }
     this.$nextTick(() => {
       //ipc.entry(this.$store.state.nickname, this.$store.state.group);
       // this.$store.dispathc("setNotifier", notification);

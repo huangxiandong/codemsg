@@ -13,7 +13,6 @@
         class="chat-editor-editor"
         @onCreated="handleCreated"
         @customPaste="customPaste"
-        @keydown.enter="handleEnter($event)"
     />
     <n-button
       strong secondary
@@ -30,8 +29,9 @@
 import '@wangeditor/editor/dist/css/style.css'
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
 import { NButton} from "naive-ui";
-import { Boot } from '@wangeditor/editor'
+import { i18nChangeLanguage } from '@wangeditor/editor'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import store from "@/store";
 
 export default {
   props: {
@@ -46,7 +46,7 @@ export default {
     sendTextMethod: {
       type: Function,
       required: true
-    }
+    },
   },
   components: { 
     Editor, Toolbar, NButton 
@@ -61,11 +61,16 @@ export default {
       toolbarKeys: [
           // 菜单 key
           'emotion'
-      ],
-      insertKeys: {
+      ]
+    }
+  if(!store.state.chatWith !== undefined && !store.state.chatWith.feiq) {
+      toolbarConfig.insertKeys = {
         index: 1, // 插入的位置，基于当前的 toolbarKeys
         keys: ['fileMenu', 'folderMenu']
       }
+    }
+    if(store.state.locale === "enUS") {
+      i18nChangeLanguage('en')
     }
     const editorConfig = {
       placeholder: 'New Message', 
@@ -81,31 +86,30 @@ export default {
       console.log('created', editor);
       editor.sendFileMethod = props.sendFileMethod;
       editor.sendFolderMethod = props.sendFolderMethod;
+      editor.customBreak = handleEnter;
       editorRef.value = editor // 记录 editor 实例，重要！
     }    
     const customPaste = (editor, event, callback) => {
-        console.log('ClipboardEvent 粘贴事件对象', event)
-        // 自定义插入内容
-        // editor.insertText('xxx')
-        // 返回值（注意，vue 事件的返回值，不能用 return）
-        callback(true) // 返回 true ，继续默认的粘贴行为
+      const text = event.clipboardData.getData("text/plain");
+      // 自定义插入内容
+      editor.insertText(text)
+      event.preventDefault()
+      // 返回值（注意，vue 事件的返回值，不能用 return）
+      callback(false) // 返回 true ，继续默认的粘贴行为
     }
     const handleEnter = (event) => {
-      if (event.ctrlKey && event.keyCode === 13) {
-        
-      } else if(event.keyCode === 13) {
-        event.preventDefault();
-        const text = content.value;
-        props.sendTextMethod(text);
-        const editor = editorRef.value;
-        editor.clear();
-        return false;
-      }
+      console.log("handleEnter");
+      // const text = content.value;
+      const editor = editorRef.value;
+      const text = editor.getText()
+      props.sendTextMethod(text);
+      editor.clear();
     }
     const handleSend =() => {
-      const text = content.value;
-      props.sendTextMethod(text);
+      // const text = content.value;
       const editor = editorRef.value;
+      const text = editor.getText()
+      props.sendTextMethod(text);
       editor.clear();
     }
     return {

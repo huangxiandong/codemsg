@@ -10,12 +10,16 @@ Just for fun!
 * Message Send/Receive encrypted extension(only support RSA-2048, AES-256 and SHA1/SHA256)
 
 ## What's new ?
+* ### Version 0.5.1
+  * Use UTF-8 emoji.
+  * Fix Some bugs.
+  * Update to wangEditor5
 * ### Version 0.5.0
   * Render image, audio and video in conversition.
   * Some changes of UI.
   * Fix Some bugs.
 * ### Version 0.4.1
-  * Drag & Drop support for sending files and folders.
+  * Drag & Drop support for sending files and folders(hold shfit).
   
 ## Todo
 

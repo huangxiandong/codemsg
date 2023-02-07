@@ -447,3 +447,42 @@ const folderMenuConf = {
 }
 Boot.registerMenu(fileMenuConf)
 Boot.registerMenu(folderMenuConf)
+
+import { DomEditor } from '@wangeditor/editor'
+
+function ctrlEnter(editor) {                            // JS 语法
+  const { insertBreak } = editor // 获取当前 editor API
+  const newEditor = editor
+
+  setTimeout(() => {
+    // beforeInput 事件不能识别 ctrl+enter ，所以自己绑定 DOM 事件
+    const { $textArea } = DomEditor.getTextarea(newEditor)
+    if ($textArea == null) return
+    $textArea.on('keydown', e => {
+      const event = e
+      const isCtrl = event.ctrlKey || event.metaKey
+      if (event.key === 'Enter' && isCtrl) {
+        // ctrl+enter 触发换行
+        newEditor.insertBreak()
+      }
+    })
+  })
+
+  newEditor.insertBreak = () => {
+    console.log("insertBreak")
+    const event = window.event
+    const isCtrl = event.ctrlKey || event.metaKey
+    // 只有 ctrl 才能换行
+    if (isCtrl) {
+      insertBreak()
+    } else {
+      if(newEditor.customBreak !== undefined) {
+        newEditor.customBreak();
+      }
+    }
+  }
+  // 返回 newEditor ，重要！
+  return newEditor
+}
+
+Boot.registerPlugin(ctrlEnter)

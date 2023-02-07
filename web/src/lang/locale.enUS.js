@@ -20,7 +20,7 @@ export default {
   chatInputPlacehoder: "Please input text",
   chatEmojiTooltip: "Emoji",
   chatSendFileTooltip: "Send Files",
-  chatSendFolderTooltip: "Send Folder",
+  chatSendFolderTooltip: "Send Folders",
   chatSendButton: " Send ",
 
   settingBasicName: "General",

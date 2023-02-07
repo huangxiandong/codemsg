@@ -1,5 +1,5 @@
 <template>
-  <div class="chat" ref="chatRef">
+  <div class="chat" ref="chat">
     <div class="chat-top">
       <div class="chat-name">
         <span>{{ chatName }}</span>
@@ -112,7 +112,9 @@ export default defineComponent({
   methods: {
     sendMessage(msg) {
       console.log("sendMessage", msg);
-      msg = msg.replace("<p>", "").replace("</p>", "");
+      if(msg.trim() === "") {
+        return;
+      }
       if (this.$store.state.chatWith !== undefined) {
         let packetId = generateId();
         let messageId = packetId + "";
@@ -301,7 +303,7 @@ export default defineComponent({
       });
     });
 
-    const chat = this.$refs.chatRef
+    const chat = this.$refs.chat
     // 被拖动的对象进入目标容器
     chat.addEventListener('dragover', e => {
       e.preventDefault()

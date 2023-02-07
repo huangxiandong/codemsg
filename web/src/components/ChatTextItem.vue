@@ -19,6 +19,9 @@ export default {
       const uriRoot = this.$store.state.uriRoot;
       let text = this.message.extra.text;
       let myHtml = "";
+      text = text.replaceAll(/\r\n/g, "<br>")
+      text = text.replaceAll(/\n/g, "<br>")
+      text = text.replaceAll(/\r/g, "<br>")
       if(text !== undefined) {
         do {
           let start = text.indexOf("http://");
@@ -59,7 +62,7 @@ export default {
       }
 
       myHtml = `<p style="margin:2px">${myHtml}</p>`
-      // console.log("chat text", myHtml);
+      console.log("chat text", myHtml);
       return myHtml;
     }
   }
