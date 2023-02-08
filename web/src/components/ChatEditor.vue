@@ -170,7 +170,7 @@ export default {
 }
 
 .w-e-panel-content-emotion {
-  width: 450px;
+  width: 490px;
 }
 
 .vscode-dark {

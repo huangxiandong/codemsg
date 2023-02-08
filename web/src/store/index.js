@@ -27,7 +27,7 @@ export default createStore({
     locale: "enUS",
     nls: enUS,
     asideWidth: 300,
-    chatInputHeight: 340,
+    chatInputHeight: 300,
     uriRoot: '',
     ip: '',
     ipList: [],

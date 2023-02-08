@@ -364,7 +364,7 @@ export default defineComponent({
 .chat-bottom {
   display: flex;
   flex-direction: column;
-  min-height: 340px;
+  min-height: 300px;
   max-height: 500px;
   position: relative;
 }
