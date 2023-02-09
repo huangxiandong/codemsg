@@ -2,7 +2,7 @@
 	"name": "codemsg",
 	"displayName": "CodeMsg",
 	"description": "CodeMsg is an IPMsg compatible extension for Visual Studio Code",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"publisher": "huangxiandong",
 	"icon": "media/logo.png",
 	"bugs": {

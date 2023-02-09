@@ -10,6 +10,8 @@ Just for fun!
 * Message Send/Receive encrypted extension(only support RSA-2048, AES-256 and SHA1/SHA256)
 
 ## What's new ?
+* ### Version 0.5.2
+  * Fix bugs in rendering multimedia in macos and Linux.
 * ### Version 0.5.1
   * Use UTF-8 emoji.
   * Fix Some bugs.

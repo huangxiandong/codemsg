@@ -21,7 +21,9 @@ export default {
     src() {
       let location = this.file.path;
       location = location.replace(/\\/g, "/");
-      let name = this.file.name;
+      if(location.startsWith("/")) {
+        location = location.substring(1);
+      }
       console.log("web url", `${this.$store.state.webRoot}${location}`)
       return `${this.$store.state.webRoot}${location}`;
     },

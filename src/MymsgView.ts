@@ -36,6 +36,7 @@ export class MymsgView {
         retainContextWhenHidden: true,
 				localResourceRoots: [
 					vscode.Uri.file(path.join(context.extensionPath, "web", "dist")),
+					vscode.Uri.file("/"),
 					vscode.Uri.file("c:/"),
 					vscode.Uri.file("d:/"),
 					vscode.Uri.file("e:/"),
