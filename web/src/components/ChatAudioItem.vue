@@ -2,7 +2,7 @@
   <div class="chat-audio-item">
     <div>
       <audio controls="controls">
-        <source :src="src" type="audio/mp3" />
+        <source :src="src" />
       </audio>
     </div>
   </div>

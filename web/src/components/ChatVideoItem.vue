@@ -2,7 +2,7 @@
   <div class="chat-video-item">
     <div>
       <video width="320" height="240" controls="controls">
-        <source :src="src" :type="type" />
+        <source :src="src" />
       </video>
     </div>
   </div>
@@ -26,17 +26,6 @@ export default {
       }
       console.log("web url", `${this.$store.state.webRoot}${location}`)
       return `${this.$store.state.webRoot}${location}`;
-    },
-    type() {
-      let name = this.file.name;
-      let index = name.lastIndexOf(".");
-      if(index != -1) {
-        let surfix = name.substring(index+1);
-        if(surfix === "ogv") {
-          return "video/ogg";  
-        }
-      }
-      return "video/mp4";      
     }
   }
 }

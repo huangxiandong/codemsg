@@ -36,7 +36,8 @@ let isImage = function(name) {
   let index = name.lastIndexOf(".");
   if(index != -1) {
     let surfix = name.substring(index+1);
-    if(surfix === "png" || surfix === "jpg" || surfix === "gif") {
+    if(surfix === "png" || surfix === "jpg" || surfix === "gif"
+      || surfix === "webp") {
       return true;
     }
   }
@@ -47,7 +48,7 @@ let isAudio = function(name) {
   let index = name.lastIndexOf(".");
   if(index != -1) {
     let surfix = name.substring(index+1);
-    if(surfix === "mp3" || surfix === "ogg") {
+    if(surfix === "mp3" || surfix === "ogg" || surfix === "wav") {
       return true;
     }
   }
@@ -58,7 +59,7 @@ let isVideo = function(name) {
   let index = name.lastIndexOf(".");
   if(index != -1) {
     let surfix = name.substring(index+1);
-    if(surfix === "mp4" || surfix === "ogv") {
+    if(surfix === "mp4" || surfix === "ogv" || surfix === "webm") {
       return true;
     }
   }
