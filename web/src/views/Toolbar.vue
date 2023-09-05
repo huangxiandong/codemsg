@@ -13,6 +13,9 @@
       <n-icon class= "toolbar-item" :class="{active: currentView==='setting'}" size="36" @click="handleClick('setting')">
         <ios-settings />
       </n-icon>
+      <n-icon class= "toolbar-item" :class="{active: currentView==='video'}" size="36" @click="handleClick('video')">
+        <ios-settings />
+      </n-icon>
     </div>
   </div>
 </template>
@@ -63,6 +66,8 @@ export default defineComponent({
         this.$router.push("/contact");
       } else if(name==="setting") {
         this.$router.push("/setting");
+      } else if(name==="video") {
+        this.$router.push("/video");
       }
     },
     ...mapActions([

@@ -16,7 +16,11 @@
     <div id="chat-resizer" class="m-resizer"></div>
     <div class="chat-bottom" :style="{ height: inputHeigth + 'px' }">
       <div class="chat-input">
-        <chat-editor class="chat-input-area" :sendTextMethod="sendMessage" :sendFileMethod="handleFile" :sendFolderMethod="handleFolder" />
+        <chat-editor class="chat-input-area" 
+          :sendTextMethod="sendMessage" 
+          :sendFileMethod="handleFile" 
+          :sendFolderMethod="handleFolder"
+          :videoCallMethod="handleVideo" />
       </div>
     </div>
     <n-modal
@@ -44,7 +48,6 @@
 
 <script>
 import { defineComponent } from "vue";
-import { onBeforeUnmount, ref, shallowRef, onMounted, onbeforeCreate } from 'vue'
 import { NInput, NIcon, NTooltip, NButton, NScrollbar, NModal } from "naive-ui";
 import { File, Folder } from "@vicons/tabler";
 import { Emoji16Regular } from "@vicons/fluent";
@@ -53,6 +56,7 @@ import ChatItem from "@/components/ChatItem.vue";
 import ipc from "@/ipc";
 import { formatDate, generateId } from "@/utils/util";
 import ChatEditor from "@/components/ChatEditor.vue";
+import Webrtc from "@/utils/webrtc"
 
 export default defineComponent({
   name: "Chat",
@@ -215,6 +219,12 @@ export default defineComponent({
           packet,
         });
       }
+    },
+    handleVideo() {
+      console.log("handleVideo");
+      let webrtc = new Webrtc();
+      webrtc.createPeerConnection();
+      webrtc.sendVideoOffer();
     },
     dragControllerDiv() {
       // 保留this引用

@@ -433,6 +433,29 @@ class FolderMenu {
     }
   }
 }
+
+class VideoMenu {
+  constructor() {
+    this.title = "视频通话"
+    this.iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 28 28"><g fill="none"><path d="M5.25 5.5A3.25 3.25 0 0 0 2 8.75v10.5a3.25 3.25 0 0 0 3.25 3.25h10.502a3.25 3.25 0 0 0 3.25-3.25v-1.58l4.541 3.112a1.25 1.25 0 0 0 1.957-1.03V8.247a1.25 1.25 0 0 0-1.956-1.03l-4.542 3.11V8.75a3.25 3.25 0 0 0-3.25-3.25H5.25zm13.752 10.352v-3.707L24 8.723v10.554l-4.998-3.425zm-1.5-7.102v10.5a1.75 1.75 0 0 1-1.75 1.75H5.25a1.75 1.75 0 0 1-1.75-1.75V8.75C3.5 7.784 4.284 7 5.25 7h10.502c.967 0 1.75.784 1.75 1.75z" fill="currentColor"></path></g></svg>';
+    this.tag = 'button'
+  }
+  getValue(editor) {
+    return ' hello '
+  }
+  isActive(editor) {
+    return false // or true
+  }
+  isDisabled(editor) {
+    return false // or true
+  }
+  exec(editor, value) {
+    if(editor.videoCallMethod !== undefined) {
+      editor.videoCallMethod();
+    }
+  }
+}
+
 const fileMenuConf = {
   key: 'fileMenu',
   factory() {
@@ -445,8 +468,15 @@ const folderMenuConf = {
     return new FolderMenu()
   }
 }
+const videoMenuConf = {
+  key: 'videoMenu',
+  factory() {
+    return new VideoMenu()
+  }
+}
 Boot.registerMenu(fileMenuConf)
 Boot.registerMenu(folderMenuConf)
+// Boot.registerMenu(videoMenuConf)
 
 import { DomEditor } from '@wangeditor/editor'
 

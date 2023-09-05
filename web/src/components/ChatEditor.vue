@@ -47,6 +47,10 @@ export default {
       type: Function,
       required: true
     },
+    videoCallMethod: {
+      type: Function,
+      required: true
+    }
   },
   components: { 
     Editor, Toolbar, NButton 
@@ -66,7 +70,7 @@ export default {
   if(!store.state.chatWith !== undefined && !store.state.chatWith.feiq) {
       toolbarConfig.insertKeys = {
         index: 1, // 插入的位置，基于当前的 toolbarKeys
-        keys: ['fileMenu', 'folderMenu']
+        keys: ['fileMenu', 'folderMenu', "videoMenu"]
       }
     }
     if(store.state.locale === "enUS") {
@@ -87,6 +91,7 @@ export default {
       editor.sendFileMethod = props.sendFileMethod;
       editor.sendFolderMethod = props.sendFolderMethod;
       editor.customBreak = handleEnter;
+      editor.videoCallMethod = props.videoCallMethod;
       editorRef.value = editor // 记录 editor 实例，重要！
     }    
     const customPaste = (editor, event, callback) => {

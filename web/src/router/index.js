@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Conversation from "../views/Conversation.vue";
 import Contact from "../views/Contact.vue"
 import Setting from "../views/Setting.vue"
+import Video from "../views/Video.vue"
 
 const routes = [
   {
@@ -22,6 +23,11 @@ const routes = [
     path: "/setting",
     name: "Setting",
     component: Setting,    
+  },
+  {
+    path: "/video",
+    name: "video",
+    component: Video,    
   }
 ];
 
