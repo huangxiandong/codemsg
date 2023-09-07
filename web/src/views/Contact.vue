@@ -61,7 +61,7 @@ import { NCollapse, NCollapseItem, NAvatar, NButton, NIcon, NInput, NScrollbar }
 import { Refresh } from '@vicons/tabler'
 import { IosStar } from '@vicons/ionicons4'
 import ContactItem from "@/components/ContactItem.vue";
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 
 export default {
   name: "Contact",

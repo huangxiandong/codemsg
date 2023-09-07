@@ -180,6 +180,7 @@ function handleWebviewMessage(obj: any, webview: vscode.Webview) {
 }
 
 const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vscode.WebviewPanel, logDBs: any) {
+  const web = e.data;
   switch (e.type) {
     case 'entry': {
       let mode = "FeiQ";
@@ -244,10 +245,10 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;	
     case 'setting':
-      let mode = e.mode;
-      let nickname = e.nickname;
-      let group = e.group;
-      let filelocation = e.filelocation;
+      let mode = web.mode;
+      let nickname = web.nickname;
+      let group = web.group;
+      let filelocation = web.filelocation;
       let target = vscode.ConfigurationTarget.Global;
       vscode.workspace.getConfiguration().update('codemsg.mode', mode, target);
       vscode.workspace.getConfiguration().update('codemsg.nickname', nickname, target);
@@ -286,7 +287,7 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case 'addFavorite' : {
-      let address = e.address;
+      let address = web.address;
       let target = vscode.ConfigurationTarget.Global;
       let favoriteList = vscode.workspace.getConfiguration().get('codemsg.favoriteList');
       if(favoriteList instanceof Array) {
@@ -296,7 +297,7 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case 'removeFavorite' : {
-      let address = e.address;
+      let address = web.address;
       let target = vscode.ConfigurationTarget.Global;
       let favoriteList = vscode.workspace.getConfiguration().get('codemsg.favoriteList');
       if(favoriteList instanceof Array) {
@@ -310,19 +311,19 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     break;
     case 'setUseVscodeMsg' : {
       let target = vscode.ConfigurationTarget.Global;
-      let useVscodeMsg = e.useVscodeMsg;
+      let useVscodeMsg = web.useVscodeMsg;
       vscode.workspace.getConfiguration().update('codemsg.useVscodeMsg', useVscodeMsg, target);
     }
     break;
     case 'setHisdays' : {
       let target = vscode.ConfigurationTarget.Global;
-      let hisdays = e.hisdays;
+      let hisdays = web.hisdays;
       vscode.workspace.getConfiguration().update('codemsg.hisdays', hisdays, target);
     }
     break;
     case 'notify' : {
-      let title = e.title;
-      let content = e.content;
+      let title = web.title;
+      let content = web.content;
       vscode.window.showInformationMessage(title, content);
       // if(webviewPanel.active) {
       //   webviewPanel.title = `CodeMsg - you have new messages`;
@@ -332,19 +333,19 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case 'openFile': {
-      let filepath = e.filepath;
+      let filepath = web.filepath;
       let fileuri = vscode.Uri.file(filepath);
       vscode.commands.executeCommand("vscode.open", fileuri);
     }
     break;
     case 'openFolder': {
-      let filepath = e.filepath;
+      let filepath = web.filepath;
       let fileuri = vscode.Uri.file(filepath);
       vscode.commands.executeCommand("revealFileInOS", fileuri);
     }
     break;
     case 'fromWebview': {
-      let data = e.data;
+      let data = web.data;
       let obj = JSON.parse(data);
       handleWebviewMessage(obj, webview);
     }
@@ -386,7 +387,7 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case "updateLog": {
-      let messageId = e.messageId;
+      let messageId = web.messageId;
       let extra = JSON.parse(e.extra);
       let todayDB = logDBs.today;
       todayDB.update({ messageId: messageId }, { $set: { extra: extra } }, {},  function (err:any, numReplaced: number) {
@@ -395,13 +396,13 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case "setEncryption": {
-      let encryption = e.encryption;
+      let encryption = web.encryption;
       let target = vscode.ConfigurationTarget.Global;
       vscode.workspace.getConfiguration().update('codemsg.encryption', encryption, target);
     }
     break;
     case "changeIp" : {
-      let ip = e.ip;
+      let ip = web.ip;
       IPMsg.instance().setDefautIP(ip);
     }
   }

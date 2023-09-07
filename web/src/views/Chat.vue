@@ -53,7 +53,7 @@ import { File, Folder } from "@vicons/tabler";
 import { Emoji16Regular } from "@vicons/fluent";
 import { Attach20Filled } from "@vicons/fluent";
 import ChatItem from "@/components/ChatItem.vue";
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 import { formatDate, generateId } from "@/utils/util";
 import ChatEditor from "@/components/ChatEditor.vue";
 import Webrtc from "@/utils/webrtc"

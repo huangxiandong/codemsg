@@ -81,7 +81,7 @@
 <script>
 import { NForm, NFormItem, NInput, NButton, NTabs, NTabPane, NList, NListItem, NModal, NSelect, NSwitch, NInputNumber } from 'naive-ui'
 
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 
 export default {
   name: "Setting",

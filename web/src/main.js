@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import { formatDate, generateId, formatString } from "@/utils/util";
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 import { Boot } from '@wangeditor/editor'
 
 window.packetNo = 0;

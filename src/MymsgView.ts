@@ -101,13 +101,17 @@ export class MymsgView {
 
 		// Receive message from the webview.
 		webviewPanel.webview.onDidReceiveMessage(e => {
-			handleMessage(e, webviewPanel.webview, webviewPanel, logDBs);
+			switch(e.type) {
+				case 'webReady':
+					this.updateWebview();      
+					break;
+				default:
+					handleMessage(e, webviewPanel.webview, webviewPanel, logDBs);
+			}
 		});
 
 		// this.testNedb();
-		// this.testSqlite3();
-		this.updateWebview();      
-		
+		// this.testSqlite3();		
 		console.log("locale", vscode.env.language);
   }
 

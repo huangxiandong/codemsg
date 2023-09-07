@@ -47,7 +47,7 @@ import ChatImageItem from "@/components/ChatImageItem.vue"
 import ChatAudioItem from "@/components/ChatAudioItem.vue"
 import ChatVideoItem from "@/components/ChatVideoItem.vue"
 import ChatFileItem from "@/components/ChatFileItem.vue"
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 import { isImage, isAudio, isVideo } from "@/utils/util";
 
 export default {

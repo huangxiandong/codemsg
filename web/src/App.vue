@@ -17,7 +17,7 @@ import { formDark, iconDark, progressDark, modalDark, dataTableDark, tooltipDark
 import { zhCN } from 'naive-ui'
 // import { useNotification } from 'naive-ui'
 import Toolbar from "@/views/Toolbar.vue";
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 
 export default defineComponent({
   setup () {
@@ -80,6 +80,7 @@ export default defineComponent({
     //     console.log("font - 1", store.state.textFontSize);
     //   }
     // }
+    ipc.webReady();
     this.$nextTick(() => {
       //ipc.entry(this.$store.state.nickname, this.$store.state.group);
       // this.$store.dispathc("setNotifier", notification);

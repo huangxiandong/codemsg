@@ -19,7 +19,7 @@ import { defineComponent } from "vue"
 import { NAvatar, NIcon } from 'naive-ui'
 import { IosStar } from '@vicons/ionicons4'
 import { Refresh } from '@vicons/tabler'
-import ipc from "@/ipc";
+import {ipc} from "@/vscode";
 
 export default defineComponent({
   name: "ContactItem",
