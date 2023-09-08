@@ -70,7 +70,7 @@ export default {
   if(!store.state.chatWith !== undefined && !store.state.chatWith.feiq) {
       toolbarConfig.insertKeys = {
         index: 1, // 插入的位置，基于当前的 toolbarKeys
-        keys: ['fileMenu', 'folderMenu', "videoMenu"]
+        keys: ['fileMenu', 'folderMenu']
       }
     }
     if(store.state.locale === "enUS") {
@@ -190,11 +190,12 @@ export default {
   }
   .w-e-text-placeholder {
     color: rgba(255, 255, 255, 0.38);
+    color: #d9d9d9;
   }
 
   --w-e-toolbar-color: rgba(255, 255, 255, 0.82);;
   --w-e-toolbar-active-bg-color: rgb(66,66,66);
-  // --w-e-toolbar-bg-color: rgba(55, 55, 55, 1);
+  --w-e-toolbar-bg-color: var(--vscode-panel-background);
 }
 .vscode-light{
   .w-e-bar {
@@ -205,6 +206,7 @@ export default {
   }
   .w-e-text-container p {
     color: rgba(51, 54, 57, 1);
+    color: #f1f1f1
   }
   .w-e-text-placeholder {
     color: rgba(194, 194, 194, 1);

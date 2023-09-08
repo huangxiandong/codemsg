@@ -13,9 +13,9 @@
       <n-icon class= "toolbar-item" :class="{active: currentView==='setting'}" size="36" @click="handleClick('setting')">
         <ios-settings />
       </n-icon>
-      <n-icon class= "toolbar-item" :class="{active: currentView==='video'}" size="36" @click="handleClick('video')">
+      <!-- <n-icon class= "toolbar-item" :class="{active: currentView==='video'}" size="36" @click="handleClick('video')">
         <ios-settings />
-      </n-icon>
+      </n-icon> -->
     </div>
   </div>
 </template>

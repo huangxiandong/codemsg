@@ -34,7 +34,9 @@ function handleRecvFile(remote: any, packet: any, extra: any, webview: vscode.We
       });
       webview.postMessage({
         type: 'fromMain',
-        message: message.toString()
+        data: {
+          message: message.toString()
+        }
       });
     }
   })
@@ -96,7 +98,9 @@ function handleSendFile(remote: any, packet: any, webview: vscode.Webview, folde
 
       webview.postMessage({
         type: 'fromMain',
-        message: message.toString()
+        data: {
+          message: message.toString()
+        }
       });
     }
   });
@@ -147,7 +151,9 @@ function handleDropFile(remote: any, packet: any, extra: any, webview: vscode.We
 
   webview.postMessage({
     type: 'fromMain',
-    message: message.toString()
+    data: {
+      message: message.toString()
+    }
   });
 }
 
@@ -351,7 +357,7 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     }
     break;
     case 'log' : {
-      let content = JSON.parse(e.content);
+      let content = JSON.parse(web.content);
       console.log("log", content);
       let todayDB = logDBs.today;
       todayDB.insert(
@@ -369,7 +375,9 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
           console.log("loadHistory", item);
           webviewPanel.webview.postMessage({
             type: 'loadlog',
-            content: JSON.stringify(item)
+            data: {
+              content: JSON.stringify(item)
+            }
           });
         }
       });
@@ -379,7 +387,9 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
           for(let item of docs) {
             webviewPanel.webview.postMessage({
               type: 'loadlog',
-              content: JSON.stringify(item)
+              data: {
+                content: JSON.stringify(item)
+              }
             });
           }
         });
@@ -388,7 +398,7 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
     break;
     case "updateLog": {
       let messageId = web.messageId;
-      let extra = JSON.parse(e.extra);
+      let extra = JSON.parse(web.extra);
       let todayDB = logDBs.today;
       todayDB.update({ messageId: messageId }, { $set: { extra: extra } }, {},  function (err:any, numReplaced: number) {
         console.log("updateLog", numReplaced+"条记录");
@@ -408,6 +418,14 @@ const handleMessage = function(e: any, webview: vscode.Webview, webviewPanel: vs
   }
 }
 
+const postWebMessage =  function(webview: vscode.Webview, type: string, data: {}) {
+  webview.postMessage({
+    type,
+    data
+  });
+}
+
 export {
- handleMessage
+ handleMessage,
+ postWebMessage
 }

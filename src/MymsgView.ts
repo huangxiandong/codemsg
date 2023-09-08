@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import { IPMsg } from './ipmsg/IPMsg'
-import { handleMessage } from './MessageHandler';
+import { handleMessage, postWebMessage } from './MessageHandler';
 
 export class MymsgView {
   	/**
@@ -118,10 +118,7 @@ export class MymsgView {
 	private setActiveTheme() {
 		let webviewPanel = this._webviewPanel;
 		let kind = vscode.window.activeColorTheme.kind;
-		webviewPanel.webview.postMessage({
-			type: 'setTheme',
-			kind: kind
-		});	
+		postWebMessage(webviewPanel.webview, 'setTheme', {kind});
 	}
 
 	private getIPs() : any {
@@ -157,12 +154,10 @@ export class MymsgView {
 			}
 		}
 		IPMsg.instance().setDefautIP(defaultIP);
-		
-		webviewPanel.webview.postMessage({
-			type: 'setIPList',
-			defaultIP: defaultIP,
-			ipList: list 
-		});	
+		postWebMessage(webviewPanel.webview, 'setIPList', {
+			defaultIP, 
+			ipList: list
+		});
 	}
 
 	private updateWebview() {
@@ -188,45 +183,36 @@ export class MymsgView {
 		let webUri = vscode.Uri.file("/");
 		const webRoot = webviewPanel.webview.asWebviewUri(webUri).toString();
 		console.log("webRoot", webRoot);
-
-		webviewPanel.webview.postMessage({
-			type: 'locale',
+		postWebMessage(webviewPanel.webview, 'locale', {
 			locale: vscode.env.language
-		})
-		webviewPanel.webview.postMessage({
-			type: 'setting',
-			mode: mode,
-			nickname: nickname,
-			group: group,
-			filelocation: filelocation
 		});
-		webviewPanel.webview.postMessage({
-			type: 'setNetworkList',
-			networkList: networkList
+		postWebMessage(webviewPanel.webview, 'setting', {
+			mode,
+			nickname,
+			group,
+			filelocation
 		});
-		webviewPanel.webview.postMessage({
-			type: 'setFavoriteList',
-			favoriteList: favoriteList
+		postWebMessage(webviewPanel.webview, 'setNetworkList', {
+			networkList
 		});
-		webviewPanel.webview.postMessage({
-			type: 'setUseVscodeMsg',
-			useVscodeMsg: useVscodeMsg
+		postWebMessage(webviewPanel.webview, 'setFavoriteList', {
+			favoriteList
 		});
-		webviewPanel.webview.postMessage({
-			type: 'setHisdays',
-			hisdays: hisdays
+		postWebMessage(webviewPanel.webview, 'setUseVscodeMsg', {
+			useVscodeMsg
 		});
-		webviewPanel.webview.postMessage({
-			type: 'setEncryption',
-			encryption: encryption
+		postWebMessage(webviewPanel.webview, 'setHisdays', {
+			hisdays
+		});
+		postWebMessage(webviewPanel.webview, 'setEncryption', {
+			encryption
 		});
 		// console.log("this.context.extensionUri", this.context.extensionUri);
-
-		webviewPanel.webview.postMessage({
-			type: "setUriRoot",
-			uriRoot: uriRoot,
-			webRoot: webRoot
-		})
+		postWebMessage(webviewPanel.webview, 'setUriRoot', {
+			uriRoot,
+			webRoot
+		});
+		
 		this.setActiveTheme();
 		this.setIPList();
 	}

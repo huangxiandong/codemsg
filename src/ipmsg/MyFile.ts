@@ -183,7 +183,9 @@ export class MyFile {
   private postWebviewMessage(message: string) : void {
     this._webview.postMessage({
       type: 'fromMain',
-      message: message
+      data: {
+        message: message
+      }
     });
   }
 }

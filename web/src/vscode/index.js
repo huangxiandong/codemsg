@@ -3,15 +3,9 @@ import { formatDate, generateId, formatString } from "@/utils/util";
 const callbackFn = {};
 
 function vscodePlatform () {
-  if (window.vscode === undefined) {
-    if (typeof acquireVsCodeApi === 'function') {
-      // vscode 
-      const vscode = acquireVsCodeApi();
-      window.vscode = vscode;
-      return vscode;
-    } else {
-      return undefined;
-    }
+  if (window.vscode === undefined && typeof acquireVsCodeApi === 'function') {
+    const vscode = acquireVsCodeApi();
+    window.vscode = vscode;
   }
 }
 
@@ -161,7 +155,7 @@ function notify(store, title, content) {
   }
 }
 
-function handleRealEntry(remote, packet, extra) {
+function handleRealEntry(remote, packet, extra, config) {
   let nickname = (extra.nickname === undefined || extra.nickname==="") ? packet.user : extra.nickname;
   let feiq = false;
   if(packet.version.indexOf("#") != -1) {
@@ -191,7 +185,7 @@ function onEntry(data, config) {
   let packet = data.packet;
   let extra = data.extra;
   console.log('onEntry', remote, packet, extra);
-  handleRealEntry(remote, packet, extra);
+  handleRealEntry(remote, packet, extra, config);
   let nickname = (extra.nickname === undefined || extra.nickname==="") ? packet.user : extra.nickname;
 
   const store = config.store;
@@ -211,7 +205,7 @@ function onAnsentry(data, config) {
   let packet = data.packet;
   let extra = data.extra;
   console.log('onAnsentry', remote, packet, extra);
-  handleRealEntry(remote, packet, extra);
+  handleRealEntry(remote, packet, extra, config);
 }
 
 function onAbsence(data, config) {
@@ -392,15 +386,111 @@ function onFileUpdate(data, config) {
   })
 }
 
+function onSetTheme(data, config) {
+  const kind = data.kind;
+  const store = config.store;
+  store.dispatch("setTheme", kind);
+}
+
+function onSetIPList(data, config) {
+  const defaultIP = data.defaultIP;
+  const ipList = data.ipList;
+  const store = config.store;
+  store.dispatch("setIp", defaultIP);
+  store.dispatch("setIpList", ipList);
+}
+
+function onSetting(data, config) {
+  const mode = data.mode;
+  const nickname = data.nickname;
+  const group = data.group;
+  const filelocation = data.filelocation;
+  const store = config.store;
+  store.dispatch("setMode", mode);
+  store.dispatch("setNickname", nickname);
+  store.dispatch("setGroup", group);
+  store.dispatch("setFilelocation", filelocation);
+}
+
+function onSetUseVscodeMsg(data, config) {
+  const useVscodeMsg = data.useVscodeMsg;
+  console.log("setUseVscodeMsg", useVscodeMsg);
+  const store = config.store;
+  store.dispatch("setUseVscodeMsg", useVscodeMsg);
+}
+
+function onSetHisdays(data, config) {
+  const hisdays = data.hisdays;
+  console.log("setHisdays", hisdays);
+  const store = config.store;
+  store.dispatch("setHisdays", hisdays);
+}
+
+function onLoadlog(data, config) {  
+  let message = JSON.parse(data.content);  
+  let obj = {
+    pos: 0,
+    message
+  }
+  const store = config.store;
+  store.dispatch("addMessage", obj);
+  store.dispatch("increaseMessage");
+}
+
+function onLocale(data, config) { 
+  let locale = "enUS";
+  if(data.locale ==="zh-cn") {
+    locale = "zhCN";
+  }
+  const store = config.store;
+  store.dispatch("setLocale", locale);
+}
+
+function onSetEncryption(data, config) { 
+  const encryption = data.encryption;
+  const store = config.store;
+  store.dispatch("setEncryption", encryption);
+}
+
+function onSetUriRoot(data, config) { 
+  const store = config.store;
+  const uriRoot = data.uriRoot;
+  store.dispatch("setUriRoot", uriRoot);
+  const webRoot = data.webRoot;
+  store.dispatch("setWebRoot", webRoot);
+}
+
+function onFromMain(data, config) {
+  let obj = JSON.parse(data.message);
+  const myHandlers = {
+    entry:onEntry,
+    exit: onExit,
+    absence: onAbsence,
+    ansentry: onAnsentry,
+    text: onTextMessage,
+    file: onPeerFileMessage,
+    myfile: onSelfFileMessage,
+    fileUpdate: onFileUpdate  
+  }
+  let type = obj.type;
+  if(myHandlers[type]) {
+    myHandlers[type](obj, config);
+  } else {
+    console.log('onFromMain', `the handler of message [${type}] not found.`)
+  }
+}
+
 const handlers = {
-  entry:onEntry,
-  exit: onExit,
-  absence: onAbsence,
-  ansentry: onAnsentry,
-  text: onTextMessage,
-  file: onPeerFileMessage,
-  myfile: onSelfFileMessage,
-  fileUpdate: onFileUpdate
+  setTheme: onSetTheme,
+  setIPList: onSetIPList,
+  setting: onSetting,
+  setUseVscodeMsg: onSetUseVscodeMsg,
+  setHisdays: onSetHisdays,
+  loadlog: onLoadlog,
+  locale: onLocale,
+  setEncryption: onSetEncryption,
+  setUriRoot: onSetUriRoot,
+  fromMain: onFromMain
 };
 
 export function listenToVscode(config) {

@@ -1485,7 +1485,9 @@ export class IPMsg {
   private postWebviewMessage(message: string) : void {
     this.webview.postMessage({
       type: 'fromMain',
-      message: message
+      data: {
+        message: message
+      }
     });
   }
 
