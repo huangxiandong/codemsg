@@ -3,7 +3,7 @@ on:
   workflow_dispatch
 jobs:
   build-and-deploy:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Setup Node.js and Yarn
       uses: mskelton/setup-yarn@v3
