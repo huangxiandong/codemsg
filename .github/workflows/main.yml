@@ -1,0 +1,20 @@
+name: build codemsg extension
+on: 
+  workflow_dispatch
+jobs:
+  build-and-deploy:
+    runs-on: macOS-latest
+    steps:
+    - name: Setup Node.js and Yarn
+      uses: mskelton/setup-yarn@v3
+      with:
+        node-version: '14.x'
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Install and Build
+      run: |
+        yarn
+        cd web
+        yarn
+        cd ..
+        yarn package
